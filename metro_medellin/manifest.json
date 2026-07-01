@@ -1,0 +1,41 @@
+{
+  "id": "/",
+  "name": "Metro Medellín",
+  "short_name": "MetroMed",
+  "description": "Mapa interactivo del sistema Metro de Medellín con geolocalización",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#0a0e1a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+	{
+	  "src": "MetroMed01.png",
+	  "sizes": "904x2316",
+	  "type": "image/png",
+	  "form_factor": "narrow",
+	  "label": "Mapa Metro Medellín"
+	},
+	{
+	  "src": "MetroMed02.png",
+	  "sizes": "904x2316",
+	  "type": "image/png",
+	  "form_factor": "narrow",
+	  "label": "Lista de estaciones"
+	}
+  ]
+}

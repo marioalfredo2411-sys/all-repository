@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(cd \"d:\\\\ClaudeApps\\\\mundial2026\"; Start-Process -FilePath \"npm\" -ArgumentList \"run\",\"dev\" -PassThru -WindowStyle Hidden; Start-Sleep -Seconds 6; try { $r = Invoke-WebRequest -Uri \"http://localhost:3001\" -TimeoutSec 4 -UseBasicParsing; \"OK $\\($r.StatusCode\\)\" } catch { try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -TimeoutSec 4 -UseBasicParsing; \"OK port 3000: $\\($r.StatusCode\\)\" } catch { \"Server not ready yet: $_\" } })",
+      "PowerShell(Start-Sleep -Seconds 10; try { $r = Invoke-WebRequest -Uri \"http://localhost:3001\" -TimeoutSec 4 -UseBasicParsing; \"OK port 3001: $\\($r.StatusCode\\)\" } catch { try { $r = Invoke-WebRequest -Uri \"http://localhost:3000\" -TimeoutSec 4 -UseBasicParsing; \"OK port 3000: $\\($r.StatusCode\\)\" } catch { \"Not ready: $_\" } })",
+      "PowerShell($r = Invoke-WebRequest -Uri \"http://localhost:3001\" -UseBasicParsing; $r.Content | Select-String \"error|Error|Uncaught\" | Select-Object -First 5)",
+      "PowerShell(Start-Process \"http://localhost:3001\")",
+      "Bash(npm list *)",
+      "Bash(npm run *)"
+    ]
+  }
+}

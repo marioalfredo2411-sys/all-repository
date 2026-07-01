@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>
+  if('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js');
+    });
+  }
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metro de Medellín</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1e2d45;
+    --text: #e8edf5;
+    --muted: #6b7fa3;
+    --accent: #f5c842;
+    --linea-a: #1e4fa0;
+    --linea-b: #f07830;
+    --cable-h: #c8387a;
+    --cable-j: #c8a020;
+    --cable-k: #5aaa28;
+    --cable-l: #8a7828;
+    --cable-m: #282870;
+    --cable-p: #d01818;
+    --tranvia: #1e8040;
+    --bus-o:   #28b4d0;
+    --bus-1:   #287888;
+    --bus-2:   #50c0c0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; overflow:hidden; background:var(--bg); font-family:'Barlow', sans-serif; color:var(--text); }
+
+  /* ── HEADER ── */
+  #header {
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 20px; height:56px;
+    background:rgba(10,14,26,0.92); backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);
+  }
+  #header .logo {
+    display:flex; align-items:center; gap:10px;
+  }
+  #header .logo-icon {
+    width:34px; height:34px; border-radius:8px;
+    background:linear-gradient(135deg,var(--linea-a),var(--accent));
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:16px; color:#fff;
+  }
+  #header h1 {
+    font-family:'Barlow Condensed',sans-serif; font-weight:700;
+    font-size:20px; letter-spacing:0.5px;
+  }
+  #header h1 span { color:var(--accent); }
+  #header-actions { display:flex; align-items:center; gap:8px; }
+  #locate-btn, #stations-btn {
+    display:flex; align-items:center; gap:8px;
+    padding:8px 16px; border-radius:8px; border:none; cursor:pointer;
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:14px;
+    letter-spacing:0.5px; transition:all 0.2s;
+  }
+  #locate-btn { background:var(--accent); color:#0a0e1a; }
+  #locate-btn:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(245,200,66,0.4); }
+  #locate-btn.loading { opacity:0.7; cursor:not-allowed; }
+  #locate-btn svg { width:16px; height:16px; }
+
+  #stations-btn { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+  #stations-btn:hover { transform:translateY(-1px); background:var(--border); }
+  #stations-btn.active { background:var(--surface2); border-color:var(--accent); color:var(--accent); }
+  #stations-btn svg { width:16px; height:16px; }
+
+  /* ── MAP ── */
+  #map { position:fixed; top:56px; left:0; right:0; bottom:0; z-index:1; }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    position:fixed; top:56px; right:0; bottom:0; width:320px; z-index:500;
+    background:rgba(10,14,26,0.93); backdrop-filter:blur(20px);
+    border-left:1px solid var(--border);
+    display:flex; flex-direction:column; overflow:hidden;
+    transform: translateX(320px);
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  #sidebar.open { transform: translateX(0); }
+
+  #sidebar-header {
+    padding:16px 20px 12px;
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  #sidebar-header h2 {
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:18px; letter-spacing:0.3px;
+  }
+  #sidebar-close {
+    background:none; border:none; color:var(--muted); cursor:pointer; padding:4px;
+    border-radius:4px; transition:color 0.2s;
+  }
+  #sidebar-close:hover { color:var(--text); }
+
+  #search-box {
+    padding:12px 16px;
+    border-bottom:1px solid var(--border);
+  }
+  #search-input {
+    width:100%; padding:10px 14px; border-radius:8px;
+    background:var(--surface2); border:1px solid var(--border); color:var(--text);
+    font-family:'Barlow',sans-serif; font-size:14px;
+    outline:none; transition:border-color 0.2s;
+  }
+  #search-input:focus { border-color:var(--accent); }
+  #search-input::placeholder { color:var(--muted); }
+
+  #lines-filter {
+    display:flex; flex-wrap:wrap; gap:6px; padding:10px 16px;
+    border-bottom:1px solid var(--border);
+  }
+  .line-pill {
+    padding:4px 10px; border-radius:20px; font-size:11px;
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:0.5px;
+    cursor:pointer; border:1px solid transparent; transition:all 0.2s; user-select:none;
+  }
+  .line-pill.active { opacity:1; }
+  .line-pill:not(.active) { opacity:0.4; }
+
+  #stations-list { overflow-y:auto; flex:1; }
+  #stations-list::-webkit-scrollbar { width:4px; }
+  #stations-list::-webkit-scrollbar-track { background:transparent; }
+  #stations-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  .station-item {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 14px;
+    border-bottom:1px solid rgba(30,45,69,0.5);
+    transition:background 0.15s;
+    position:relative;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .station-item:hover { background:var(--surface2); }
+  .station-item.nearest { background:rgba(245,200,66,0.06); border-left:2px solid var(--accent); }
+  .station-dot {
+    width:11px; height:11px; border-radius:50%; flex-shrink:0;
+    border:2px solid rgba(255,255,255,0.25);
+  }
+  .station-info { flex:1; min-width:0; }
+  .station-name { font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .station-line-label { font-size:11px; color:var(--muted); font-family:'Barlow Condensed',sans-serif; letter-spacing:0.3px; }
+  .station-actions { display:flex; align-items:center; gap:6px; margin-left:auto; flex-shrink:0; }
+  .station-dist { font-size:10px; color:var(--accent); font-family:'Barlow Condensed',sans-serif; font-weight:700; }
+
+  /* ── Botón DETALLE (siempre visible) ── */
+  .station-detail-btn {
+    display:flex; align-items:center; gap:5px;
+    padding:5px 10px; border-radius:7px; border:1px solid var(--border);
+    background:var(--surface2); color:var(--text);
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:12px;
+    letter-spacing:0.4px; cursor:pointer; flex-shrink:0;
+    touch-action: manipulation; white-space:nowrap;
+    transition:background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .station-detail-btn:hover, .station-detail-btn:active {
+    background:var(--accent); color:#0a0e1a; border-color:var(--accent);
+  }
+  .station-detail-btn svg { width:12px; height:12px; pointer-events:none; flex-shrink:0; }
+
+  /* ── Botón mapa (pin) ── */
+  .station-map-btn {
+    display:flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:7px; border:1px solid var(--border);
+    background:var(--surface2); color:var(--muted);
+    cursor:pointer; flex-shrink:0;
+    touch-action: manipulation;
+    transition:background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .station-map-btn:hover, .station-map-btn:active { background:rgba(0,153,216,0.2); color:#0099d8; border-color:#0099d8; }
+  .station-map-btn svg { width:14px; height:14px; pointer-events:none; }
+
+  /* ── INFO CARD ── */
+  #info-card {
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    z-index:600; background:rgba(17,24,39,0.97); backdrop-filter:blur(20px);
+    border:1px solid var(--border); border-radius:16px;
+    padding:16px 20px 14px; width:clamp(300px,90vw,460px);
+    display:none; animation:slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { opacity:0; transform:translateX(-50%) translateY(16px); }
+    to   { opacity:1; transform:translateX(-50%) translateY(0); }
+  }
+  #info-card.visible { display:block; }
+  #info-card-header { display:flex; align-items:center; gap:10px; margin-bottom:12px; padding-right:28px; }
+  #info-card-dot { width:14px; height:14px; border-radius:50%; flex-shrink:0; }
+  #info-card-name { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:22px; line-height:1.1; }
+  #info-card-line { font-size:12px; color:var(--muted); margin-top:1px; }
+  #info-card-body { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+  .info-stat { background:var(--surface2); border-radius:8px; padding:8px 11px; }
+  .info-stat-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px; }
+  .info-stat-value { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px; margin-top:2px; line-height:1.2; }
+  .info-stat-value.small { font-size:12px; font-family:'Barlow',sans-serif; font-weight:500; }
+  .info-stat.full { grid-column:1/-1; }
+  #info-card-footer { display:flex; gap:8px; margin-top:12px; }
+  #info-card-go-btn {
+    flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
+    padding:10px 0; border-radius:10px; border:none; cursor:pointer;
+    background:var(--accent); color:#0a0e1a;
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.5px;
+    transition:all 0.2s;
+  }
+  #info-card-go-btn:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(245,200,66,0.45); }
+  #info-card-go-btn svg { width:15px; height:15px; flex-shrink:0; }
+  #info-card-maps-btn {
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    padding:10px 14px; border-radius:10px; border:1px solid var(--border); cursor:pointer;
+    background:var(--surface2); color:var(--text);
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.5px;
+    transition:all 0.2s; white-space:nowrap;
+  }
+  #info-card-maps-btn:hover { transform:translateY(-1px); border-color:#4ade80; color:#4ade80; }
+  #info-card-maps-btn svg { width:15px; height:15px; flex-shrink:0; }
+  #info-card-close {
+    position:absolute; top:12px; right:12px;
+    background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px;
+    width:28px; height:28px; display:flex; align-items:center; justify-content:center;
+    border-radius:6px; transition:background 0.15s;
+  }
+  #info-card-close:hover { background:var(--surface2); color:var(--text); }
+
+  /* ── REPORT LOCATION ── */
+  #info-card-report {
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    width:100%; margin-top:8px; padding:8px;
+    border-radius:8px; border:1px dashed rgba(255,255,255,0.12);
+    background:none; color:var(--muted); cursor:pointer;
+    font-family:'Barlow',sans-serif; font-size:12px;
+    touch-action:manipulation; transition:all 0.2s;
+  }
+  #info-card-report:hover, #info-card-report:active { border-color:#f59e0b; color:#f59e0b; background:rgba(245,158,11,0.06); }
+  #info-card-report svg { width:13px; height:13px; pointer-events:none; }
+
+  /* ── CORRECTION OVERLAY ── */
+  #correction-overlay {
+    position:fixed; inset:0; z-index:900;
+    background:rgba(0,0,0,0.55); backdrop-filter:blur(4px);
+    display:none; align-items:flex-end; justify-content:center;
+    padding-bottom:20px;
+  }
+  #correction-overlay.visible { display:flex; animation:fadeIn 0.2s ease; }
+  #correction-panel {
+    width:clamp(300px,92vw,440px);
+    background:rgba(10,14,26,0.98); backdrop-filter:blur(20px);
+    border:1px solid var(--border); border-radius:16px;
+    padding:20px; display:flex; flex-direction:column; gap:12px;
+  }
+  #correction-panel h3 {
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:18px;
+    display:flex; align-items:center; gap:8px;
+  }
+  #correction-panel h3 svg { width:18px; height:18px; color:#f59e0b; }
+  #correction-station-name { font-size:13px; color:var(--muted); margin-top:-6px; }
+  #correction-coords {
+    background:var(--surface2); border-radius:8px; padding:10px 12px;
+    font-family:'Barlow Condensed',sans-serif; font-size:13px; color:var(--muted);
+    min-height:38px;
+  }
+  #correction-coords span { color:var(--accent); font-weight:700; }
+  .correction-btn {
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:11px; border-radius:10px; border:none; cursor:pointer;
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px;
+    touch-action:manipulation; transition:all 0.2s;
+  }
+  .correction-btn svg { width:16px; height:16px; pointer-events:none; }
+  #correction-gps-btn  { background:var(--accent); color:#0a0e1a; }
+  #correction-gps-btn:hover  { box-shadow:0 4px 14px rgba(245,200,66,0.4); }
+  #correction-map-btn  { background:rgba(0,153,216,0.15); color:#0099d8; border:1px solid #0099d8; }
+  #correction-map-btn:hover  { background:rgba(0,153,216,0.28); }
+  #correction-save-btn { background:#16a34a; color:#fff; display:none; }
+  #correction-save-btn:hover { background:#15803d; }
+  #correction-cancel-btn { background:none; color:var(--muted); border:1px solid var(--border); }
+  #correction-cancel-btn:hover { color:var(--text); border-color:var(--text); }
+  #map-pick-banner {
+    position:fixed; top:68px; left:50%; transform:translateX(-50%);
+    z-index:950; background:rgba(245,158,11,0.95); color:#0a0e1a;
+    padding:10px 20px; border-radius:10px; font-family:'Barlow Condensed',sans-serif;
+    font-weight:700; font-size:15px; white-space:nowrap; pointer-events:none;
+    display:none;
+  }
+  #map-pick-banner.visible { display:block; animation:slideDown 0.3s ease; }
+  @keyframes slideDown { from{opacity:0;transform:translateX(-50%) translateY(-10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+  /* ── LOCATION TOAST ── */
+  #location-toast {
+    position:fixed; top:72px; left:50%; transform:translateX(-50%);
+    z-index:700; background:rgba(17,24,39,0.97); backdrop-filter:blur(12px);
+    border:1px solid var(--border); border-radius:10px;
+    padding:10px 18px; font-size:13px; white-space:nowrap;
+    display:none; animation:fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateX(-50%) translateY(-8px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  #location-toast.visible { display:block; }
+  #location-toast .toast-near { color:var(--accent); font-weight:600; }
+
+  /* ── LEGEND ── */
+  #legend-wrap {
+    position:fixed; bottom:20px; left:16px; z-index:600;
+    display:flex; align-items:stretch;
+    touch-action:none; user-select:none;
+  }
+  #legend {
+    background:rgba(10,14,26,0.93); backdrop-filter:blur(16px);
+    border:1px solid var(--border); border-radius:12px; padding:14px 16px 12px;
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease;
+    transform-origin: left center;
+    min-width: 178px;
+  }
+  #legend-wrap.collapsed #legend {
+    transform: translateX(calc(-100% - 18px));
+    opacity: 0;
+    pointer-events: none;
+  }
+  #legend-drag-handle {
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    margin-bottom:8px; cursor:grab;
+  }
+  #legend-drag-handle:active { cursor:grabbing; }
+  #legend h3 {
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px;
+    letter-spacing:0.5px; color:var(--muted); text-transform:uppercase;
+  }
+  #legend-hide-btn {
+    background:none; border:none; cursor:pointer; color:var(--muted);
+    display:flex; align-items:center; padding:2px; border-radius:4px;
+    transition:color 0.15s, background 0.15s; flex-shrink:0;
+  }
+  #legend-hide-btn:hover { color:var(--text); background:var(--border); }
+  #legend-hide-btn svg { width:14px; height:14px; }
+  .legend-item { display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+  .legend-line { width:24px; height:4px; border-radius:2px; flex-shrink:0; }
+  .legend-label { font-size:12px; font-family:'Barlow',sans-serif; white-space:nowrap; }
+
+  /* ── LEGEND TAB (visible when collapsed) ── */
+  #legend-tab {
+    position:fixed; bottom:20px; left:0; z-index:600;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:6px; padding:10px 7px;
+    background:rgba(10,14,26,0.93); backdrop-filter:blur(16px);
+    border:1px solid var(--border); border-left:none;
+    border-radius:0 10px 10px 0;
+    cursor:pointer;
+    opacity:0; pointer-events:none;
+    transform: translateX(-4px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  #legend-tab.visible {
+    opacity:1; pointer-events:auto; transform:translateX(0);
+  }
+  #legend-tab:hover { background:rgba(26,34,54,0.97); }
+  #legend-tab svg { width:14px; height:14px; color:var(--accent); flex-shrink:0; }
+  #legend-tab span {
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:10px;
+    letter-spacing:1.5px; color:var(--muted); text-transform:uppercase;
+    writing-mode:vertical-rl; text-orientation:mixed;
+    transform:rotate(180deg);
+  }
+
+  /* mobile */
+  @media (max-width:640px) {
+    #sidebar { width:100%; transform:translateX(100%); }
+    #sidebar.open { transform:translateX(0); }
+    #legend-wrap { bottom:80px; }
+    #legend-tab { bottom:80px; }
+    #locate-btn span, #stations-btn span { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+  <div class="logo">
+    <div class="logo-icon">M</div>
+    <h1>Metro <span>Medellín</span></h1>
+  </div>
+  <div id="header-actions">
+    <button id="stations-btn" onclick="toggleSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="5" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="12" cy="19" r="1.5" fill="currentColor"/>
+        <line x1="16" y1="5" x2="20" y2="5"/><line x1="16" y1="12" x2="20" y2="12"/><line x1="16" y1="19" x2="20" y2="19"/>
+        <line x1="4" y1="5" x2="8" y2="5"/><line x1="4" y1="12" x2="8" y2="12"/><line x1="4" y1="19" x2="8" y2="19"/>
+      </svg>
+      <span>Estaciones</span>
+    </button>
+    <button id="locate-btn" onclick="locateUser()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        <circle cx="12" cy="12" r="8" stroke-dasharray="4 2"/>
+      </svg>
+      <span>Mi ubicación</span>
+    </button>
+  </div>
+</div>
+
+<!-- MAP -->
+<div id="map"></div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div id="sidebar-header">
+    <h2>Estaciones</h2>
+    <button id="sidebar-close" onclick="toggleSidebar()">✕</button>
+  </div>
+  <div id="search-box">
+    <input id="search-input" type="text" placeholder="Buscar estación..." oninput="filterStations()">
+  </div>
+  <div id="lines-filter"></div>
+  <div id="stations-list"></div>
+</div>
+
+<!-- LEGEND -->
+<div id="legend-tab" onclick="toggleLegend()" title="Mostrar leyenda">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="3" y1="6"  x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+  <span>Líneas</span>
+</div>
+
+<div id="legend-wrap">
+  <div id="legend">
+    <div id="legend-drag-handle">
+      <h3>Líneas</h3>
+      <button id="legend-hide-btn" onclick="toggleLegend()" title="Ocultar leyenda">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+    </div>
+    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px">Metro</div>
+    <div class="legend-item"><div class="legend-line" style="background:#1e4fa0"></div><span class="legend-label">A · Niquía – La Estrella</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#f07830"></div><span class="legend-label">B · San Antonio – San Javier</span></div>
+    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:6px 0 5px">Metrocable</div>
+    <div class="legend-item"><div class="legend-line" style="background:#c8387a"></div><span class="legend-label">H · Oriente – Villa Sierra</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#c8a020"></div><span class="legend-label">J · San Javier – La Aurora</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#5aaa28"></div><span class="legend-label">K · Acevedo – Sto. Domingo</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#8a7828"></div><span class="legend-label">L · Sto. Domingo – Arví</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#282870"></div><span class="legend-label">M · Miraflores – 13 Nov.</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#d01818;opacity:0.7"></div><span class="legend-label" style="opacity:0.7">P · Acevedo – El Progreso 🚧</span></div>
+    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:6px 0 5px">Tranvía y Bus Eléctrico</div>
+    <div class="legend-item"><div class="legend-line" style="background:#1e8040"></div><span class="legend-label">T · San Antonio – Oriente</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#28b4d0"></div><span class="legend-label">O · Caribe – La Palma</span></div>
+    <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin:6px 0 5px">Bus BRT</div>
+    <div class="legend-item"><div class="legend-line" style="background:#287888"></div><span class="legend-label">1 · U. de M. – P. Aranjuez</span></div>
+    <div class="legend-item"><div class="legend-line" style="background:#50c0c0"></div><span class="legend-label">2 · U. de M. – P. Aranjuez</span></div>
+  </div>
+</div>
+
+<!-- INFO CARD -->
+<div id="info-card">
+  <button id="info-card-close" onclick="closeInfoCard()">✕</button>
+  <div id="info-card-header">
+    <div id="info-card-dot"></div>
+    <div>
+      <div id="info-card-name"></div>
+      <div id="info-card-line"></div>
+    </div>
+  </div>
+  <div id="info-card-body"></div>
+  <div id="info-card-footer">
+    <button id="info-card-go-btn" onclick="flyToStation()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+        <circle cx="12" cy="9" r="2.5" fill="currentColor" stroke="none"/>
+      </svg>
+      Ver en mapa
+    </button>
+    <button id="info-card-maps-btn" onclick="openGoogleMaps()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      </svg>
+      Google Maps
+    </button>
+  </div>
+  <button id="info-card-report" onclick="openCorrectionPanel()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/>
+      <circle cx="12" cy="10" r="3"/><line x1="12" y1="6" x2="12" y2="6.01"/>
+    </svg>
+    ¿Ubicación incorrecta? Sugerir corrección
+  </button>
+</div>
+
+<!-- CORRECTION OVERLAY -->
+<div id="correction-overlay" onclick="cancelCorrection()">
+  <div id="correction-panel" onclick="event.stopPropagation()">
+    <h3>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      Corregir ubicación
+    </h3>
+    <div id="correction-station-name"></div>
+    <div id="correction-coords">Sin coordenadas seleccionadas</div>
+    <button class="correction-btn" id="correction-gps-btn" onclick="useGPSForCorrection()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+      </svg>
+      Usar mi ubicación GPS actual
+    </button>
+    <button class="correction-btn" id="correction-map-btn" onclick="pickOnMap()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M3 11l19-9-9 19-2-8-8-2z"/>
+      </svg>
+      Tocar el mapa para marcar posición
+    </button>
+    <button class="correction-btn" id="correction-save-btn" onclick="saveCorrection()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      Guardar corrección
+    </button>
+    <button class="correction-btn" id="correction-cancel-btn" onclick="cancelCorrection()">
+      Cancelar
+    </button>
+  </div>
+</div>
+
+<!-- MAP PICK BANNER -->
+<div id="map-pick-banner">📍 Toca el mapa en la posición correcta de la estación</div>
+
+<!-- LOCATION TOAST -->
+<div id="location-toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+// Colores exactos del mapa oficial del Metro de Medellín (foto estación Estadio)
+const LINES = {
+  // ── METRO ──
+  'Línea A': { color:'#1e4fa0', type:'metro',    tramo:'Niquía ↔ La Estrella',                               horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'$3.820 frecuente · $4.400 portador', bici:true  },
+  'Línea B': { color:'#f07830', type:'metro',    tramo:'San Antonio ↔ San Javier',                           horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'$3.820 frecuente · $4.400 portador', bici:true  },
+  // ── METROCABLE ──
+  'Línea H': { color:'#c8387a', type:'cable',    tramo:'Oriente ↔ Villa Sierra',                             horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 9:00am–10:00pm', tarifa:'Incluida en tarifa Metro',           bici:true  },
+  'Línea J': { color:'#c8a020', type:'cable',    tramo:'San Javier ↔ La Aurora',                             horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 9:00am–10:00pm', tarifa:'Incluida en tarifa Metro',           bici:true  },
+  'Línea K': { color:'#5aaa28', type:'cable',    tramo:'Acevedo ↔ Santo Domingo',                            horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 8:30am–10:00pm', tarifa:'Incluida en tarifa Metro',           bici:true  },
+  'Línea L': { color:'#8a7828', type:'cable',    tramo:'Santo Domingo ↔ Arví',                               horario:'Lun/Mié-Sáb 9:00am–6:00pm · Dom/Fest 8:30am–6:00pm · ⚠️ No opera martes', tarifa:'Estratos 1-3: $3.900 · Nacionales: $11.900 · Extranjeros: $26.700', bici:false },
+  'Línea M': { color:'#282870', type:'cable',    tramo:'Miraflores ↔ Trece de Noviembre',                    horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 9:00am–10:00pm', tarifa:'Incluida en tarifa Metro',           bici:true  },
+  'Línea P': { color:'#d01818', type:'cable',    tramo:'Acevedo ↔ El Progreso (en construcción)',            horario:'Próximamente',                                       tarifa:'Incluida en tarifa Metro',           bici:false },
+  // ── TRANVÍA Y BUS ELÉCTRICO ──
+  'Línea T': { color:'#1e8040', type:'tranvia',  tramo:'San Antonio ↔ Oriente',                              horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'Incluida en tarifa Metro',           bici:false },
+  'Línea O': { color:'#28b4d0', type:'tranvia',  tramo:'Caribe ↔ La Palma (Av. 80)',                         horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'$3.820 frecuente · $4.400 portador', bici:false },
+  // ── BUS BRT ──
+  'Línea 1': { color:'#287888', type:'bus',      tramo:'U. de M. ↔ Parque Aranjuez (Av. del Ferrocarril)',  horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'$3.820 frecuente · $4.400 portador', bici:false },
+  'Línea 2': { color:'#50c0c0', type:'bus',      tramo:'U. de M. ↔ Parque Aranjuez (Av. Oriental)',         horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'$3.820 frecuente · $4.400 portador', bici:false },
+};
+
+const STATIONS = [
+  // ── LÍNEA A · Metro (Niquía → La Estrella) ──
+  { name:'Niquía',               line:'Línea A', lat:6.33825, lng:-75.53378, interchange:false },
+  { name:'Bello',                line:'Línea A', lat:6.32955, lng:-75.53495, interchange:false },
+  { name:'Madera',               line:'Línea A', lat:6.31858, lng:-75.53747, interchange:false },
+  { name:'Acevedo',              line:'Línea A', lat:6.30738, lng:-75.54342, interchange:true  },
+  { name:'Tricentenario',        line:'Línea A', lat:6.29880, lng:-75.55050, interchange:false },
+  { name:'Caribe',               line:'Línea A', lat:6.29245, lng:-75.55641, interchange:true  },
+  { name:'Universidad',          line:'Línea A', lat:6.28484, lng:-75.56304, interchange:false },
+  { name:'Hospital',             line:'Línea A', lat:6.27413, lng:-75.56713, interchange:false },
+  { name:'Prado',                line:'Línea A', lat:6.26713, lng:-75.56723, interchange:false },
+  { name:'Parque Berrío',        line:'Línea A', lat:6.25221, lng:-75.56851, interchange:true  },
+  { name:'San Antonio',          line:'Línea A', lat:6.24650, lng:-75.56897, interchange:true  },
+  { name:'Alpujarra',            line:'Línea A', lat:6.24375, lng:-75.57183, interchange:true  },
+  { name:'Exposiciones',         line:'Línea A', lat:6.23782, lng:-75.57329, interchange:false },
+  { name:'Industriales',         line:'Línea A', lat:6.23005, lng:-75.57349, interchange:false },
+  { name:'Poblado',              line:'Línea A', lat:6.21301, lng:-75.57123, interchange:false },
+  { name:'Aguacatala',           line:'Línea A', lat:6.20127, lng:-75.57213, interchange:true  },
+  { name:'Ayurá',                line:'Línea A', lat:6.18997, lng:-75.57164, interchange:false },
+  { name:'Envigado',             line:'Línea A', lat:6.17424, lng:-75.58236, interchange:false },
+  { name:'Itagüí',               line:'Línea A', lat:6.16698, lng:-75.58949, interchange:false },
+  { name:'Sabaneta',             line:'Línea A', lat:6.15058, lng:-75.60820, interchange:false },
+  { name:'La Estrella',          line:'Línea A', lat:6.13623, lng:-75.61969, interchange:false },
+
+  // ── LÍNEA B · Metro (San Antonio → San Javier) ──
+  { name:'San Antonio',          line:'Línea B', lat:6.24650, lng:-75.56897, interchange:true  },
+  { name:'Cisneros',             line:'Línea B', lat:6.24830, lng:-75.57543, interchange:false },
+  { name:'Suramericana',         line:'Línea B', lat:6.25062, lng:-75.58285, interchange:false },
+  { name:'Estadio',              line:'Línea B', lat:6.25022, lng:-75.59461, interchange:false },
+  { name:'Floresta',             line:'Línea B', lat:6.25103, lng:-75.60381, interchange:false },
+  { name:'Santa Lucía',          line:'Línea B', lat:6.25100, lng:-75.60680, interchange:false },
+  { name:'San Javier',           line:'Línea B', lat:6.24853, lng:-75.61554, interchange:true  },
+
+  // ── LÍNEA H · Metrocable (Oriente → Villa Sierra) ──
+  { name:'Oriente',              line:'Línea H', lat:6.23500, lng:-75.54382, interchange:true  },
+  { name:'El Pinal',             line:'Línea H', lat:6.23100, lng:-75.53600, interchange:true  },
+  { name:'Las Esperanzas',       line:'Línea H', lat:6.22680, lng:-75.52980, interchange:false },
+  { name:'Villa Sierra',         line:'Línea H', lat:6.22200, lng:-75.52250, interchange:false },
+
+  // ── LÍNEA J · Metrocable (San Javier → La Aurora) ──
+  { name:'San Javier',           line:'Línea J', lat:6.24853, lng:-75.61554, interchange:true  },
+  { name:'Juan XXIII',           line:'Línea J', lat:6.25300, lng:-75.62600, interchange:false },
+  { name:'Vallejuelos',          line:'Línea J', lat:6.25590, lng:-75.63450, interchange:false },
+  { name:'La Aurora',            line:'Línea J', lat:6.25920, lng:-75.64300, interchange:false },
+
+  // ── LÍNEA K · Metrocable (Acevedo → Santo Domingo) ──
+  { name:'Acevedo',              line:'Línea K', lat:6.30738, lng:-75.54342, interchange:true  },
+  { name:'Andalucía',            line:'Línea K', lat:6.30338, lng:-75.53440, interchange:false },
+  { name:'Popular',              line:'Línea K', lat:6.30014, lng:-75.52772, interchange:false },
+  { name:'Santo Domingo',        line:'Línea K', lat:6.29514, lng:-75.51851, interchange:true  },
+
+  // ── LÍNEA L · Metrocable Arví (Santo Domingo → Arví) ──
+  { name:'Santo Domingo',        line:'Línea L', lat:6.29514, lng:-75.51851, interchange:true  },
+  { name:'Arví',                 line:'Línea L', lat:6.26200, lng:-75.48430, interchange:false },
+
+  // ── LÍNEA M · Metrocable (Miraflores → Trece de Noviembre) ──
+  { name:'Miraflores',           line:'Línea M', lat:6.24010, lng:-75.55030, interchange:true  },
+  { name:'El Pinal',             line:'Línea M', lat:6.23100, lng:-75.53600, interchange:true  },
+  { name:'Trece de Noviembre',   line:'Línea M', lat:6.22500, lng:-75.52780, interchange:false },
+
+  // ── LÍNEA P · Metrocable (Acevedo → El Progreso) ──
+  { name:'Acevedo',              line:'Línea P', lat:6.30738, lng:-75.54342, interchange:true  },
+  { name:'Doce de Octubre',      line:'Línea P', lat:6.30200, lng:-75.55800, interchange:false },
+  { name:'El Progreso',          line:'Línea P', lat:6.30800, lng:-75.57200, interchange:false },
+
+  // ── LÍNEA T · Tranvía (San Antonio → Oriente) ──
+  { name:'San Antonio',          line:'Línea T', lat:6.24650, lng:-75.56897, interchange:true  },
+  { name:'Bicentenario',         line:'Línea T', lat:6.24530, lng:-75.56375, interchange:false },
+  { name:'Buenos Aires',         line:'Línea T', lat:6.24400, lng:-75.55700, interchange:false },
+  { name:'Miraflores',           line:'Línea T', lat:6.24010, lng:-75.55030, interchange:true  },
+  { name:'Loyola',               line:'Línea T', lat:6.23860, lng:-75.54680, interchange:false },
+  { name:'Alejandro Echavarría', line:'Línea T', lat:6.23660, lng:-75.54280, interchange:false },
+  { name:'Oriente',              line:'Línea T', lat:6.23500, lng:-75.54382, interchange:true  },
+
+  // ── LÍNEA O · Bus eléctrico (Caribe → La Palma, Av. 80) ──
+  { name:'Caribe',               line:'Línea O', lat:6.29245, lng:-75.55641, interchange:true  },
+  { name:'Córdoba',              line:'Línea O', lat:6.28400, lng:-75.56350, interchange:false },
+  { name:'Pilarica',             line:'Línea O', lat:6.27700, lng:-75.57250, interchange:false },
+  { name:'Ciudadela Universitaria', line:'Línea O', lat:6.27050, lng:-75.57900, interchange:false },
+  { name:'Facultad de Minas',    line:'Línea O', lat:6.26400, lng:-75.58350, interchange:false },
+  { name:'Los Colores',          line:'Línea O', lat:6.25700, lng:-75.58900, interchange:false },
+  { name:'Calasanz',             line:'Línea O', lat:6.25150, lng:-75.59350, interchange:false },
+  { name:'Integración Floresta', line:'Línea O', lat:6.24800, lng:-75.59900, interchange:true  },
+  { name:'Los Pinos',            line:'Línea O', lat:6.24400, lng:-75.60450, interchange:false },
+  { name:'Santa Lucía',          line:'Línea O', lat:6.25100, lng:-75.60680, interchange:true  },
+  { name:'La Palma',             line:'Línea O', lat:6.24100, lng:-75.61200, interchange:false },
+
+  // ── LÍNEA 1 · Bus BRT (U. de M. → Parque Aranjuez, Av. Ferrocarril) ──
+  { name:'U. de M.',             line:'Línea 1', lat:6.24375, lng:-75.57183, interchange:true  },
+  { name:'Integración',          line:'Línea 1', lat:6.25221, lng:-75.56851, interchange:true  },
+  { name:'Chagualo',             line:'Línea 1', lat:6.26100, lng:-75.56700, interchange:false },
+  { name:'Ruta N · U. de A.',   line:'Línea 1', lat:6.27000, lng:-75.56550, interchange:false },
+  { name:'Universal',            line:'Línea 1', lat:6.28100, lng:-75.56380, interchange:false },
+  { name:'Parque Aranjuez',      line:'Línea 1', lat:6.29650, lng:-75.56290, interchange:true  },
+
+  // ── LÍNEA 2 · Bus BRT (U. de M. → Parque Aranjuez, Av. Oriental) ──
+  { name:'U. de M.',             line:'Línea 2', lat:6.24375, lng:-75.57183, interchange:true  },
+  { name:'San José',             line:'Línea 2', lat:6.24900, lng:-75.56600, interchange:false },
+  { name:'La Playa',             line:'Línea 2', lat:6.25150, lng:-75.56300, interchange:false },
+  { name:'Catedral',             line:'Línea 2', lat:6.25400, lng:-75.56050, interchange:false },
+  { name:'Minorista',            line:'Línea 2', lat:6.25700, lng:-75.55750, interchange:false },
+  { name:'Berlín',               line:'Línea 2', lat:6.26800, lng:-75.55300, interchange:false },
+  { name:'Las Esmeraldas',       line:'Línea 2', lat:6.27500, lng:-75.54900, interchange:false },
+  { name:'Manrique',             line:'Línea 2', lat:6.28100, lng:-75.54600, interchange:false },
+  { name:'Gardel',               line:'Línea 2', lat:6.28600, lng:-75.54250, interchange:false },
+  { name:'Palos Verdes',         line:'Línea 2', lat:6.29100, lng:-75.53900, interchange:false },
+  { name:'Parque Aranjuez',      line:'Línea 2', lat:6.29650, lng:-75.56290, interchange:true  },
+];
+
+// ── ROUTE PATHS (fallback – overwritten by OSM data) ─────────────────────────
+const ROUTES = {};
+Object.keys(LINES).forEach(l => {
+  ROUTES[l] = STATIONS.filter(s => s.line === l).map(s => [s.lat, s.lng]);
+});
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let map, userMarker, userCircle;
+let activeLines = new Set(Object.keys(LINES));
+let markers = [];
+let selectedStation = null;
+let nearestStation = null;
+let userPos = null;
+
+// ── LOADING OVERLAY ──────────────────────────────────────────────────────────
+function showLoader(msg) {
+  let el = document.getElementById('osm-loader');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'osm-loader';
+    el.style.cssText = `
+      position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+      z-index:2000;background:rgba(10,14,26,0.95);backdrop-filter:blur(12px);
+      border:1px solid #1e2d45;border-radius:10px;padding:10px 18px;
+      font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#e8edf5;
+      display:flex;align-items:center;gap:10px;white-space:nowrap;
+    `;
+    document.body.appendChild(el);
+  }
+  el.innerHTML = `<span style="display:inline-block;width:14px;height:14px;border:2px solid #f5c842;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite"></span>${msg}`;
+  el.style.display = 'flex';
+}
+function hideLoader() {
+  const el = document.getElementById('osm-loader');
+  if (el) el.style.display = 'none';
+}
+
+// ── MAP INIT ─────────────────────────────────────────────────────────────────
+function initMap() {
+  map = L.map('map', {
+    center: [6.248, -75.573],
+    zoom: 13,
+    zoomControl: false,
+    attributionControl: false
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom:19,
+  }).addTo(map);
+
+  const style = document.createElement('style');
+  style.textContent = `.leaflet-tile-pane { filter: brightness(1.9) contrast(1.15) saturate(1.3); }`;
+  document.head.appendChild(style);
+
+  L.control.attribution({ position:'bottomright', prefix:'© Metro Medellín · OSM' }).addTo(map);
+
+  // Draw fallback immediately so map isn't empty while loading
+  drawLines();
+  drawStations();
+  buildSidebar();
+  buildLineFilter();
+
+  // Then load precise OSM data
+  loadOSMData();
+}
+
+// ── OSM OVERPASS FETCH ────────────────────────────────────────────────────────
+// OSM relation IDs for Metro de Medellín lines (verified)
+const OSM_RELATIONS = {
+  'Línea A': 1763104,
+  'Línea B': 1763105,
+  'Línea K': 1763106,
+  'Línea J': 1763108,
+  'Línea L': 3501461,
+  'Línea H': 6897839,
+  'Línea T': 4598249,
+  'Línea 1': 6706940,
+  'Línea 2': 6706941,
+};
+
+async function loadOSMData() {
+  showLoader('Cargando datos de OpenStreetMap…');
+  try {
+    // Query: all metro/cable/tram stations + railway ways in Medellín bounding box
+    const query = `
+[out:json][timeout:30];
+(
+  node["railway"~"station|halt"]["subway"="yes"](6.08,-75.70,6.38,-75.44);
+  node["railway"~"station|halt"]["cable_car"="yes"](6.08,-75.70,6.38,-75.44);
+  node["railway"="station"]["network"~"Metro"](6.08,-75.70,6.38,-75.44);
+  node["public_transport"="station"]["subway"="yes"](6.08,-75.70,6.38,-75.44);
+  way["railway"~"subway|light_rail|cable_car|tram"](6.08,-75.70,6.38,-75.44);
+);
+out body;
+>;
+out skel qt;`.trim();
+
+    const url = 'https://overpass-api.de/api/interpreter?data=' + encodeURIComponent(query);
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    if (!data.elements || !data.elements.length) throw new Error('No elements');
+
+    // Build node index for way geometry resolution
+    const nodeIdx = {};
+    data.elements.forEach(el => { if (el.type === 'node') nodeIdx[el.id] = el; });
+
+    // ── Update station coordinates from OSM nodes ──
+    const osmStations = data.elements.filter(el =>
+      el.type === 'node' && el.tags &&
+      (el.tags.railway === 'station' || el.tags.railway === 'halt' ||
+       el.tags.public_transport === 'station')
+    );
+
+    let matched = 0;
+    STATIONS.forEach(s => {
+      // Normalize name for fuzzy match
+      const norm = t => t.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[^a-z0-9 ]/g,'').trim();
+      const sNorm = norm(s.name);
+      const hit = osmStations.find(o => {
+        const n = norm(o.tags.name || '');
+        return n === sNorm || n.includes(sNorm) || sNorm.includes(n);
+      });
+      if (hit) {
+        s.lat = hit.lat;
+        s.lng = hit.lon;
+        matched++;
+      }
+    });
+
+    // ── Build route geometry from OSM ways ──
+    const ways = data.elements.filter(el => el.type === 'way' && el.nodes);
+
+    // Group ways by railway type to assign to lines
+    // We use spatial proximity: ways near a line's stations → that line
+    Object.keys(LINES).forEach(lineName => {
+      const lineSts = STATIONS.filter(s => s.line === lineName);
+      if (!lineSts.length) return;
+
+      const type = LINES[lineName].type;
+      const targetTags = type === 'metro'   ? ['subway']
+                       : type === 'cable'   ? ['cable_car']
+                       : type === 'tranvia' ? ['tram', 'light_rail']
+                       : type === 'bus'     ? ['light_rail', 'subway']
+                       : ['subway'];
+
+      // Find ways whose nodes are close to this line's stations
+      const lineWays = ways.filter(w => {
+        if (!w.tags) return false;
+        const rt = w.tags.railway;
+        if (!targetTags.includes(rt)) return false;
+        // Check if any node of this way is near any station of this line
+        const wayNodes = (w.nodes || []).slice(0, 5);
+        return wayNodes.some(nid => {
+          const nd = nodeIdx[nid];
+          if (!nd) return false;
+          return lineSts.some(s =>
+            Math.abs(nd.lat - s.lat) < 0.02 && Math.abs(nd.lon - s.lng) < 0.02
+          );
+        });
+      });
+
+      if (!lineWays.length) return;
+
+      // Build connected polyline by chaining way segments
+      const coords = buildConnectedLine(lineWays, nodeIdx, lineSts);
+      if (coords.length >= 2) ROUTES[lineName] = coords;
+    });
+
+    // Redraw everything with precise data
+    markers.forEach(({marker}) => map.removeLayer(marker));
+    markers = [];
+    Object.entries(routeLayers).forEach(([, l]) => map.removeLayer(l));
+    Object.keys(routeLayers).forEach(k => delete routeLayers[k]);
+
+    // Rebuild ROUTES for lines that got no OSM geometry (keep station fallback)
+    Object.keys(LINES).forEach(l => {
+      if (!ROUTES[l] || ROUTES[l].length < 2)
+        ROUTES[l] = STATIONS.filter(s => s.line === l).map(s => [s.lat, s.lng]);
+    });
+
+    drawLines();
+    drawStations();
+    buildSidebar();
+    hideLoader();
+    showToast(`✅ ${matched} estaciones actualizadas desde OpenStreetMap`);
+
+  } catch(err) {
+    hideLoader();
+    showToast('⚠️ Sin conexión a OSM – usando coordenadas locales');
+  }
+}
+
+// Chain way segments into a single ordered polyline
+function buildConnectedLine(ways, nodeIdx, lineSts) {
+  if (!ways.length) return [];
+
+  // Convert each way to array of [lat,lng]
+  const segments = ways.map(w =>
+    (w.nodes || []).map(nid => {
+      const n = nodeIdx[nid];
+      return n ? [n.lat, n.lon] : null;
+    }).filter(Boolean)
+  ).filter(s => s.length >= 2);
+
+  if (!segments.length) return [];
+
+  // Sort segments so they form a connected path
+  // Start from the segment closest to first station
+  const first = lineSts[0];
+  let startIdx = 0, minD = Infinity;
+  segments.forEach((seg, i) => {
+    const d = Math.hypot(seg[0][0] - first.lat, seg[0][1] - first.lng);
+    if (d < minD) { minD = d; startIdx = i; }
+  });
+
+  const ordered = [segments[startIdx]];
+  const used = new Set([startIdx]);
+
+  while (ordered.length < segments.length) {
+    const last = ordered[ordered.length - 1];
+    const tail = last[last.length - 1];
+    let bestIdx = -1, bestD = 0.005, reversed = false;
+
+    segments.forEach((seg, i) => {
+      if (used.has(i)) return;
+      const dHead = Math.hypot(seg[0][0] - tail[0], seg[0][1] - tail[1]);
+      const dTail = Math.hypot(seg[seg.length-1][0] - tail[0], seg[seg.length-1][1] - tail[1]);
+      if (dHead < bestD) { bestD = dHead; bestIdx = i; reversed = false; }
+      if (dTail < bestD) { bestD = dTail; bestIdx = i; reversed = true;  }
+    });
+
+    if (bestIdx === -1) break; // gap in data – stop
+    used.add(bestIdx);
+    ordered.push(reversed ? [...segments[bestIdx]].reverse() : segments[bestIdx]);
+  }
+
+  return ordered.flat();
+}
+
+// ── DRAW LINES ───────────────────────────────────────────────────────────────
+const routeLayers = {};
+function drawLines() {
+  Object.entries(ROUTES).forEach(([lineName, coords]) => {
+    if (!coords || coords.length < 2) return;
+    const lineData = LINES[lineName] || {};
+    const color = lineData.color || '#888';
+    const type  = lineData.type  || 'metro';
+    const weight     = type === 'metro'  ? 5 : type === 'cable' ? 3 : 4;
+    const dashArray  = type === 'cable'  ? '8 6' : type === 'bus' ? '10 4' : null;
+    const lineJoin   = 'round';
+    const lineCap    = 'round';
+
+    const poly = L.polyline(coords, { color, weight, opacity:0.92, dashArray, lineJoin, lineCap });
+    routeLayers[lineName] = poly;
+    if (activeLines.has(lineName)) poly.addTo(map);
+  });
+}
+
+// ── DRAW STATIONS ─────────────────────────────────────────────────────────────
+function createStationIcon(station) {
+  const color = LINES[station.line]?.color || '#888';
+  const size = station.interchange ? 14 : 10;
+  const ring = station.interchange ? 3 : 2;
+  return L.divIcon({
+    className:'',
+    html:`<div style="
+      width:${size}px;height:${size}px;border-radius:50%;
+      background:${color};border:${ring}px solid rgba(255,255,255,0.9);
+      box-shadow:0 2px 8px rgba(0,0,0,0.6);
+      transition:transform 0.2s;
+    "></div>`,
+    iconSize:[size,size],
+    iconAnchor:[size/2,size/2]
+  });
+}
+
+function drawStations() {
+  // dedupe by name+line
+  const seen = new Set();
+  STATIONS.forEach(s => {
+    const key = `${s.name}|${s.line}`;
+    if(seen.has(key)) return;
+    seen.add(key);
+
+    const marker = L.marker([s.lat, s.lng], { icon: createStationIcon(s) });
+    marker.stationData = s;
+    marker.on('click', ()=> showInfoCard(s));
+    marker.addTo(map);
+    markers.push({ marker, station:s });
+  });
+}
+
+// ── SIDEBAR ──────────────────────────────────────────────────────────────────
+function buildSidebar() {
+  renderStationList(STATIONS);
+
+  // Single delegated listener — works perfectly on touch and mouse
+  const list = document.getElementById('stations-list');
+  let _pointerStartY = 0;
+  list.addEventListener('pointerdown', e => { _pointerStartY = e.clientY; });
+  list.addEventListener('pointerup', function(e) {
+    // Ignore if user was scrolling (moved more than 8px vertically)
+    if (Math.abs(e.clientY - _pointerStartY) > 8) return;
+    const target = e.target.closest('[data-idx]');
+    if (!target) return;
+    const data = list._stationData;
+    if (!data) return;
+    const idx = parseInt(target.dataset.idx, 10);
+    const fly = target.dataset.fly === '1';
+    const s = data[idx];
+    if (!s) return;
+    e.stopPropagation();
+    if (fly) {
+      if (window.innerWidth <= 640) toggleSidebar();
+      map.flyTo([s.lat, s.lng], 16, { duration: 1.2 });
+      setTimeout(() => showInfoCard(s), 400);
+    } else {
+      showInfoCard(s);
+    }
+  });
+}
+
+function renderStationList(stations) {
+  const list = document.getElementById('stations-list');
+  const seen = new Set();
+  const unique = stations.filter(s => {
+    const key = `${s.name}|${s.line}`;
+    if(seen.has(key)) return false;
+    seen.add(key); return true;
+  });
+
+  list.innerHTML = unique.map((s, i) => {
+    const color = LINES[s.line]?.color || '#888';
+    const isNearest = nearestStation && nearestStation.name === s.name && nearestStation.line === s.line;
+    const dist = userPos ? formatDist(calcDist(userPos.lat, userPos.lng, s.lat, s.lng)) : '';
+    return `
+      <div class="station-item ${isNearest?'nearest':''}" data-idx="${i}" data-fly="0">
+        <div class="station-dot" style="background:${color}"></div>
+        <div class="station-info">
+          <div class="station-name">${s.name}${isNearest?' 📍':''}</div>
+          <div class="station-line-label">${s.line}</div>
+        </div>
+        <div class="station-actions">
+          ${dist ? `<span class="station-dist">${dist}</span>` : ''}
+          <button class="station-detail-btn" data-idx="${i}" data-fly="0" title="Ver ficha de la estación">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="pointer-events:none">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            Detalle
+          </button>
+          <button class="station-map-btn" data-idx="${i}" data-fly="1" title="Ver en el mapa">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="pointer-events:none">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+              <circle cx="12" cy="9" r="2.5" fill="currentColor" stroke="none"/>
+            </svg>
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Store the current unique list for delegation lookup
+  list._stationData = unique;
+}
+
+function filterStations() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const filtered = STATIONS.filter(s =>
+    activeLines.has(s.line) &&
+    (s.name.toLowerCase().includes(q) || s.line.toLowerCase().includes(q))
+  );
+  renderStationList(filtered);
+}
+
+function buildLineFilter() {
+  const container = document.getElementById('lines-filter');
+  // merge Metroplús keys
+  const lineKeys = Object.keys(LINES);
+  container.innerHTML = lineKeys.map(line => {
+    const color = LINES[line].color;
+    return `<div class="line-pill active" style="background:${color}22;color:${color};border-color:${color}55"
+      data-line="${line}" onclick="toggleLine('${line}',this)">
+      ${line.replace('Metroplús ','M-').replace('Línea ','L-').replace('Tranvía ','T-').replace('Cable ','')}
+    </div>`;
+  }).join('');
+}
+
+function toggleLine(lineName, el) {
+  if(activeLines.has(lineName)) {
+    activeLines.delete(lineName);
+    el.classList.remove('active');
+    if(routeLayers[lineName]) map.removeLayer(routeLayers[lineName]);
+    markers.forEach(({marker,station}) => {
+      if(station.line===lineName) map.removeLayer(marker);
+    });
+  } else {
+    activeLines.add(lineName);
+    el.classList.add('active');
+    if(routeLayers[lineName]) map.addLayer(routeLayers[lineName]);
+    markers.forEach(({marker,station}) => {
+      if(station.line===lineName) map.addLayer(marker);
+    });
+  }
+  filterStations();
+}
+
+// ── FOCUS / INFO ─────────────────────────────────────────────────────────────
+function selectStation(lat, lng, name, line, flyToMap) {
+  const s = STATIONS.find(s => s.name === name && s.line === line);
+  if (!s) return;
+
+  if (flyToMap) {
+    if (window.innerWidth <= 640) toggleSidebar();
+    map.flyTo([lat, lng], 16, { duration: 1.2 });
+    setTimeout(() => showInfoCard(s), 400);
+  } else {
+    showInfoCard(s);
+  }
+}
+
+function showInfoCard(s) {
+  const lineData = LINES[s.line] || {};
+  const color = lineData.color || '#888';
+  const typeLabel = { metro:'Metro', cable:'Metrocable', tranvia:'Tranvía', bus:'Bus BRT' }[lineData.type] || lineData.type || '—';
+  const dist = userPos ? formatDist(calcDist(userPos.lat, userPos.lng, s.lat, s.lng)) : null;
+  const biciTag = lineData.bici ? '✓ Permitida' : '✗ Solo plegables';
+
+  // Store current station for goToStation
+  window._currentCardStation = s;
+
+  document.getElementById('info-card-dot').style.background = color;
+  document.getElementById('info-card-name').textContent = s.name;
+  document.getElementById('info-card-line').innerHTML =
+    `<span style="color:${color};font-weight:600">${s.line}</span> · ${typeLabel}${s.interchange ? ' · <span style="color:var(--accent)">🔀 Transferencia</span>' : ''}`;
+
+  document.getElementById('info-card-body').innerHTML = `
+    <div class="info-stat">
+      <div class="info-stat-label">Tramo</div>
+      <div class="info-stat-value small">${lineData.tramo || '—'}</div>
+    </div>
+    ${dist ? `
+    <div class="info-stat">
+      <div class="info-stat-label">Distancia</div>
+      <div class="info-stat-value" style="color:var(--accent)">${dist}</div>
+    </div>` : `
+    <div class="info-stat">
+      <div class="info-stat-label">Sistema</div>
+      <div class="info-stat-value" style="color:${color}">${typeLabel}</div>
+    </div>`}
+    <div class="info-stat full">
+      <div class="info-stat-label">Horario de servicio</div>
+      <div class="info-stat-value small">${lineData.horario || '—'}</div>
+    </div>
+    <div class="info-stat full">
+      <div class="info-stat-label">Tarifa Cívica</div>
+      <div class="info-stat-value small">${lineData.tarifa || '—'}</div>
+    </div>
+    <div class="info-stat">
+      <div class="info-stat-label">Bicicleta</div>
+      <div class="info-stat-value small">${biciTag}</div>
+    </div>
+    <div class="info-stat">
+      <div class="info-stat-label">Tipo</div>
+      <div class="info-stat-value small">${s.interchange ? '🔀 Transferencia' : 'Estación regular'}</div>
+    </div>`;
+
+  document.getElementById('info-card').classList.add('visible');
+}
+
+let _goStation = null;
+function flyToStation() {
+  const s = window._currentCardStation;
+  if (!s) return;
+  closeInfoCard();
+  const sb = document.getElementById('sidebar');
+  if (sb.classList.contains('open')) toggleSidebar();
+  map.flyTo([s.lat, s.lng], 17, { duration: 1.4 });
+}
+
+function openGoogleMaps() {
+  const s = window._currentCardStation;
+  if (!s) return;
+  const gmUrl = `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`;
+  window.open(gmUrl, '_blank');
+}
+
+// ── LOCATION CORRECTION ───────────────────────────────────────────────────────
+let _correctionStation = null;
+let _correctionCoords  = null;
+let _correctionMarker  = null;
+let _pickingOnMap      = false;
+
+function openCorrectionPanel() {
+  const s = window._currentCardStation;
+  if (!s) return;
+  _correctionStation = s;
+  _correctionCoords  = null;
+
+  document.getElementById('correction-station-name').textContent = `${s.name} · ${s.line}`;
+  document.getElementById('correction-coords').innerHTML = 'Sin coordenadas seleccionadas';
+  document.getElementById('correction-save-btn').style.display = 'none';
+  document.getElementById('correction-overlay').classList.add('visible');
+  closeInfoCard();
+}
+
+function cancelCorrection() {
+  document.getElementById('correction-overlay').classList.remove('visible');
+  document.getElementById('map-pick-banner').classList.remove('visible');
+  if (_correctionMarker) { map.removeLayer(_correctionMarker); _correctionMarker = null; }
+  _pickingOnMap = false;
+  _correctionCoords = null;
+  map.off('click', _onMapPick);
+}
+
+function _setTempMarker(lat, lng) {
+  if (_correctionMarker) map.removeLayer(_correctionMarker);
+  _correctionMarker = L.marker([lat, lng], {
+    icon: L.divIcon({
+      className:'',
+      html:`<div style="
+        width:22px;height:22px;border-radius:50%;
+        background:#f59e0b;border:3px solid white;
+        box-shadow:0 0 0 4px rgba(245,158,11,0.35),0 2px 8px rgba(0,0,0,0.6);
+      "></div>`,
+      iconSize:[22,22], iconAnchor:[11,11]
+    })
+  }).addTo(map);
+}
+
+function _showCoords(lat, lng) {
+  _correctionCoords = { lat, lng };
+  document.getElementById('correction-coords').innerHTML =
+    `Nueva posición: <span>${lat.toFixed(6)}, ${lng.toFixed(6)}</span>`;
+  document.getElementById('correction-save-btn').style.display = 'flex';
+}
+
+function useGPSForCorrection() {
+  if (!navigator.geolocation) { showToast('⚠️ GPS no disponible'); return; }
+  const btn = document.getElementById('correction-gps-btn');
+  btn.textContent = 'Obteniendo GPS…';
+  btn.disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      _setTempMarker(lat, lng);
+      _showCoords(lat, lng);
+      map.flyTo([lat, lng], 17, { duration: 1 });
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Usar mi ubicación GPS actual`;
+      btn.disabled = false;
+    },
+    () => {
+      showToast('⚠️ No se pudo obtener el GPS');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg> Usar mi ubicación GPS actual`;
+      btn.disabled = false;
+    },
+    { enableHighAccuracy: true, timeout: 8000 }
+  );
+}
+
+function _onMapPick(e) {
+  if (!_pickingOnMap) return;
+  _pickingOnMap = false;
+  map.off('click', _onMapPick);
+  document.getElementById('map-pick-banner').classList.remove('visible');
+  document.getElementById('correction-overlay').classList.add('visible');
+
+  const { lat, lng } = e.latlng;
+  _setTempMarker(lat, lng);
+  _showCoords(lat, lng);
+}
+
+function pickOnMap() {
+  document.getElementById('correction-overlay').classList.remove('visible');
+  document.getElementById('map-pick-banner').classList.add('visible');
+  _pickingOnMap = true;
+  map.once('click', _onMapPick);
+  // Close sidebar so full map is visible
+  const sb = document.getElementById('sidebar');
+  if (sb.classList.contains('open')) toggleSidebar();
+  if (_correctionStation) map.flyTo([_correctionStation.lat, _correctionStation.lng], 16, { duration: 0.8 });
+}
+
+function saveCorrection() {
+  if (!_correctionStation || !_correctionCoords) return;
+  const { lat, lng } = _correctionCoords;
+  const s = _correctionStation;
+
+  // Apply to all matching stations in STATIONS array
+  let count = 0;
+  STATIONS.forEach(st => {
+    if (st.name === s.name && st.line === s.line) {
+      st.lat = lat; st.lng = lng; count++;
+    }
+  });
+
+  // Persist in localStorage
+  try {
+    const key = `correction:${s.name}|${s.line}`;
+    localStorage.setItem(key, JSON.stringify({ lat, lng }));
+  } catch(e) {}
+
+  // Redraw markers
+  markers.forEach(({marker, station}) => {
+    if (station.name === s.name && station.line === s.line) {
+      marker.setLatLng([lat, lng]);
+    }
+  });
+
+  // Remove temp marker
+  if (_correctionMarker) { map.removeLayer(_correctionMarker); _correctionMarker = null; }
+
+  cancelCorrection();
+  map.flyTo([lat, lng], 17, { duration: 1.2 });
+  showToast(`✅ Corrección guardada para ${s.name} (${s.line})`);
+}
+
+// Load any saved corrections on startup
+function loadSavedCorrections() {
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key.startsWith('correction:')) continue;
+      const [name, line] = key.replace('correction:','').split('|');
+      const { lat, lng } = JSON.parse(localStorage.getItem(key));
+      STATIONS.forEach(st => {
+        if (st.name === name && st.line === line) { st.lat = lat; st.lng = lng; }
+      });
+    }
+  } catch(e) {}
+}
+
+// ── NOMINATIM AUTO-CORRECT ────────────────────────────────────────────────────
+// Uses OpenStreetMap Nominatim (free, no API key) to validate station positions
+async function refineStationCoords() {
+  const KEY_STATIONS = ['Estadio','Floresta','San Javier','Suramericana','Santo Domingo','Acevedo','Poblado','Envigado'];
+  for (const name of KEY_STATIONS) {
+    try {
+      const q = encodeURIComponent(`Metro ${name} Medellín Colombia`);
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&countrycodes=co`, {
+        headers: { 'Accept-Language': 'es' }
+      });
+      const data = await res.json();
+      if (!data.length) continue;
+      const { lat, lon } = data[0];
+      // Update all matching stations
+      STATIONS.forEach(s => {
+        if (s.name === name) { s.lat = parseFloat(lat); s.lng = parseFloat(lon); }
+      });
+    } catch(e) { /* silently skip if network fails */ }
+    await new Promise(r => setTimeout(r, 250)); // rate limit: 4 req/s max
+  }
+  // Redraw markers and routes with corrected coords
+  markers.forEach(({ marker }) => map.removeLayer(marker));
+  markers = [];
+  Object.values(routeLayers).forEach(l => map.removeLayer(l));
+  drawLines();
+  drawStations();
+}
+
+function closeInfoCard() {
+  document.getElementById('info-card').classList.remove('visible');
+}
+
+// ── GEOLOCATION ──────────────────────────────────────────────────────────────
+function locateUser() {
+  if(!navigator.geolocation) { showToast('⚠️ Geolocalización no disponible'); return; }
+  const btn = document.getElementById('locate-btn');
+  btn.classList.add('loading');
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin 1s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg><span>Localizando…</span>`;
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude:lat, longitude:lng, accuracy } = pos.coords;
+      userPos = { lat, lng };
+      btn.classList.remove('loading');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Actualizar</span>`;
+
+      if(userMarker) { map.removeLayer(userMarker); map.removeLayer(userCircle); }
+
+      userCircle = L.circle([lat,lng], { radius:accuracy, color:'#0099d8', fillColor:'#0099d8', fillOpacity:0.08, weight:1 }).addTo(map);
+      userMarker = L.marker([lat,lng], {
+        icon: L.divIcon({
+          className:'',
+          html:`<div style="width:18px;height:18px;border-radius:50%;background:#0099d8;border:3px solid white;box-shadow:0 0 0 4px rgba(0,153,216,0.3),0 2px 8px rgba(0,0,0,0.5)"></div>`,
+          iconSize:[18,18], iconAnchor:[9,9]
+        })
+      }).addTo(map);
+
+      map.flyTo([lat,lng], 15, { duration:1.5 });
+
+      // find nearest
+      nearestStation = findNearest(lat, lng);
+      const dist = formatDist(calcDist(lat, lng, nearestStation.lat, nearestStation.lng));
+      showToast(`📍 Estación más cercana: <span class="toast-near">${nearestStation.name}</span> · ${dist}`);
+      filterStations();
+    },
+    err => {
+      btn.classList.remove('loading');
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><span>Mi ubicación</span>`;
+      showToast('⚠️ No se pudo obtener la ubicación. Revisa los permisos.');
+    },
+    { enableHighAccuracy:true, timeout:10000 }
+  );
+}
+
+function findNearest(lat, lng) {
+  let min = Infinity, nearest = null;
+  const seen = new Set();
+  STATIONS.forEach(s => {
+    const key = `${s.name}|${s.line}`;
+    if(seen.has(key)) return; seen.add(key);
+    const d = calcDist(lat, lng, s.lat, s.lng);
+    if(d < min) { min=d; nearest=s; }
+  });
+  return nearest;
+}
+
+// ── UTILS ────────────────────────────────────────────────────────────────────
+function calcDist(lat1, lng1, lat2, lng2) {
+  const R = 6371e3;
+  const φ1 = lat1*Math.PI/180, φ2 = lat2*Math.PI/180;
+  const Δφ = (lat2-lat1)*Math.PI/180, Δλ = (lng2-lng1)*Math.PI/180;
+  const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+  return R * 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function formatDist(m) {
+  return m < 1000 ? `${Math.round(m)} m` : `${(m/1000).toFixed(1)} km`;
+}
+
+function showToast(html) {
+  const t = document.getElementById('location-toast');
+  t.innerHTML = html;
+  t.classList.add('visible');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=> t.classList.remove('visible'), 5000);
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const btn = document.getElementById('stations-btn');
+  const isOpen = sb.classList.toggle('open');
+  btn.classList.toggle('active', isOpen);
+}
+
+// CSS spin keyframe for loading
+const style = document.createElement('style');
+style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(style);
+
+// ── LEGEND TOGGLE ────────────────────────────────────────────────────────────
+function toggleLegend() {
+  const wrap = document.getElementById('legend-wrap');
+  const tab  = document.getElementById('legend-tab');
+  const isCollapsed = wrap.classList.toggle('collapsed');
+  tab.classList.toggle('visible', isCollapsed);
+}
+
+// ── DRAGGABLE LEGEND WRAP ─────────────────────────────────────────────────────
+(function() {
+  const wrap   = document.getElementById('legend-wrap');
+  const handle = document.getElementById('legend-drag-handle');
+  let dragging = false, startX, startY, origLeft, origTop;
+
+  function onMove(e) {
+    if (!dragging) return;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const dx = clientX - startX, dy = clientY - startY;
+    const maxL = window.innerWidth  - wrap.offsetWidth;
+    const maxT = window.innerHeight - wrap.offsetHeight;
+    wrap.style.left = Math.max(0, Math.min(origLeft + dx, maxL)) + 'px';
+    wrap.style.top  = Math.max(56, Math.min(origTop  + dy, maxT)) + 'px';
+  }
+
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup',   onEnd);
+  }
+
+  function onStart(e) {
+    if (e.target.closest('#legend-hide-btn')) return;
+    if (wrap.classList.contains('collapsed')) return;
+    dragging = true;
+    const r = wrap.getBoundingClientRect();
+    wrap.style.bottom = 'auto';
+    wrap.style.left   = r.left + 'px';
+    wrap.style.top    = r.top  + 'px';
+    startX = e.clientX; startY = e.clientY;
+    origLeft = r.left;  origTop  = r.top;
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup',   onEnd);
+  }
+
+  handle.addEventListener('pointerdown', onStart);
+})();
+
+// ── BOOT ─────────────────────────────────────────────────────────────────────
+loadSavedCorrections();
+initMap();
+</script>
+</body>
+</html>

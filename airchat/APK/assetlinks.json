@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.netlify.chipper_capybara_cc6070.twa",
+        "sha256_cert_fingerprints": ["E6:4C:1D:84:3B:36:8C:09:D8:9B:47:FD:11:96:87:FE:2D:0D:A2:DE:2E:7C:3C:BA:5B:F7:1B:73:8B:17:17:EE"]
+      }
+    }]

@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "anthropic.claude-vscode",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "dsznajder.es7-react-js-snippets",
+    "burkeholland.simple-react-snippets",
+    "formulahendry.auto-rename-tag",
+    "christian-kohler.path-intellisense",
+    "naumovs.color-highlight"
+  ]
+}

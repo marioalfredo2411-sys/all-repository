@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Read(//c/Users/mario/AppData/Local/**)",
+      "Read(//c/ProgramData/**)",
+      "Bash(find /c -name \"node.exe\" -maxdepth 5)",
+      "Bash(cmd.exe /c \"node --version & npm --version & where node\")",
+      "Bash(cmd.exe /c \"where node 2>&1 && node --version 2>&1 && npm --version 2>&1\")",
+      "PowerShell($nodePath = Get-Command node -ErrorAction SilentlyContinue; if \\($nodePath\\) { $nodePath.Source } else { \"Node not in PATH\" }; Get-ChildItem \"C:\\\\Program Files\\\\nodejs\" -ErrorAction SilentlyContinue | Select-Object Name; Get-ChildItem \"C:\\\\Program Files \\(x86\\)\\\\nodejs\" -ErrorAction SilentlyContinue | Select-Object Name; Get-ChildItem \"$env:APPDATA\\\\nvm\" -ErrorAction SilentlyContinue | Select-Object Name)"
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "AirChat — Chat Local sin Internet",
+  "short_name": "AirChat",
+  "description": "Chat privado P2P para aviones y zonas sin cobertura. Conecta con personas cercanas usando solo un código de 6 letras.",
+  "start_url": ".",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FFFFFF",
+  "theme_color": "#023E8A",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": ["communication", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
