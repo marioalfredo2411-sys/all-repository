@@ -5,21 +5,79 @@
 <meta name="theme-color" content="#0a0e1a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MetroMed">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+<!-- Pantallas de inicio para "Añadir a pantalla de inicio" en iOS.
+     Sin estas, Safari muestra una pantalla blanca al abrir la PWA.
+     Regenerar con: npm run assets  (scripts/make-assets.mjs + capacitor-assets) -->
+<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/icons/apple-splash-640-1136@2x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/icons/apple-splash-1080-1920@3x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/icons/apple-splash-750-1334@2x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/icons/apple-splash-1125-2436@3x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/icons/apple-splash-1170-2532@3x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/icons/apple-splash-1242-2688@3x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/icons/apple-splash-828-1792@2x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="/icons/apple-splash-1284-2778@3x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/icons/apple-splash-1536-2048@2x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 810px) and (device-height: 1080px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/icons/apple-splash-1620-2160@2x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/icons/apple-splash-1668-2224@2x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/icons/apple-splash-1668-2388@2x.png">
+<link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/icons/apple-splash-2048-2732@2x.png">
 <script>
-  if('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js');
+  // Registro del Service Worker + aviso de versión nueva.
+  // Antes solo se registraba: si publicabas una versión, el usuario seguía con
+  // la vieja hasta cerrar todas las pestañas, sin enterarse de nada.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', async () => {
+      // Ruta relativa: funciona igual en la raíz del dominio o en subcarpeta.
+      const reg = await navigator.serviceWorker.register('sw.js').catch(() => null);
+      if (!reg) return;
+
+      // Ya hay una versión esperando de una visita anterior.
+      if (reg.waiting) avisarActualizacion(reg.waiting);
+
+      reg.addEventListener('updatefound', () => {
+        const nuevo = reg.installing;
+        nuevo?.addEventListener('statechange', () => {
+          // 'installed' con un controller activo = actualización, no primera vez.
+          if (nuevo.state === 'installed' && navigator.serviceWorker.controller) {
+            avisarActualizacion(nuevo);
+          }
+        });
+      });
+
+      // Cuando el SW nuevo toma el control, recargar una sola vez.
+      let recargando = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (recargando) return;
+        recargando = true;
+        location.reload();
+      });
     });
+  }
+
+  function avisarActualizacion(worker) {
+    const aviso = document.createElement('div');
+    aviso.id = 'sw-update';
+    aviso.innerHTML =
+      '<span>Hay una versión nueva</span>' +
+      '<button type="button">Actualizar</button>';
+    aviso.querySelector('button').addEventListener('click', () => {
+      worker.postMessage('activar-actualizacion');
+      aviso.remove();
+    });
+    document.body.appendChild(aviso);
+    requestAnimationFrame(() => aviso.classList.add('visible'));
   }
 </script>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Metro de Medellín</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.min.css"/>
+<link rel="stylesheet" href="vendor/fonts.css">
 <style>
   :root {
     --bg: #0a0e1a;
@@ -42,6 +100,24 @@
     --bus-1:   #287888;
     --bus-2:   #50c0c0;
   }
+  /* Safe areas: notch / isla dinámica arriba, barra de gestos abajo.
+     Con viewport-fit=cover env() devuelve valores reales en iOS y en el
+     WebView de Android en modo edge-to-edge; 0px en navegador de escritorio. */
+  :root {
+    /* Primero los valores planos: si un navegador no entiende env(), descarta
+       solo las declaraciones de abajo y el layout no se rompe. */
+    --safe-top: 0px;
+    --safe-bottom: 0px;
+    --safe-left: 0px;
+    --safe-right: 0px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --header-h: 56px;
+    --top-offset: calc(var(--header-h) + var(--safe-top));
+  }
+
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { height:100%; overflow:hidden; background:var(--bg); font-family:'Barlow', sans-serif; color:var(--text); }
 
@@ -49,7 +125,8 @@
   #header {
     position:fixed; top:0; left:0; right:0; z-index:1000;
     display:flex; align-items:center; justify-content:space-between;
-    padding:0 20px; height:56px;
+    padding:var(--safe-top) calc(20px + var(--safe-right)) 0 calc(20px + var(--safe-left));
+    height:var(--top-offset);
     background:rgba(10,14,26,0.92); backdrop-filter:blur(16px);
     border-bottom:1px solid var(--border);
   }
@@ -85,11 +162,12 @@
   #stations-btn svg { width:16px; height:16px; }
 
   /* ── MAP ── */
-  #map { position:fixed; top:56px; left:0; right:0; bottom:0; z-index:1; }
+  #map { position:fixed; top:var(--top-offset); left:0; right:0; bottom:0; z-index:1; }
 
   /* ── SIDEBAR ── */
   #sidebar {
-    position:fixed; top:56px; right:0; bottom:0; width:320px; z-index:500;
+    position:fixed; top:var(--top-offset); right:0; bottom:0; width:320px; z-index:500;
+    padding-bottom:var(--safe-bottom);
     background:rgba(10,14,26,0.93); backdrop-filter:blur(20px);
     border-left:1px solid var(--border);
     display:flex; flex-direction:column; overflow:hidden;
@@ -193,11 +271,15 @@
 
   /* ── INFO CARD ── */
   #info-card {
-    position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+    position:fixed; bottom:calc(20px + var(--safe-bottom)); left:50%; transform:translateX(-50%);
     z-index:600; background:rgba(17,24,39,0.97); backdrop-filter:blur(20px);
     border:1px solid var(--border); border-radius:16px;
     padding:16px 20px 14px; width:clamp(300px,90vw,460px);
     display:none; animation:slideUp 0.3s ease;
+    /* Con la lista de servicios la ficha puede crecer: que desplace por dentro
+       en vez de salirse de la pantalla. */
+    max-height:calc(100vh - var(--top-offset) - var(--safe-bottom) - 40px);
+    overflow-y:auto; overscroll-behavior:contain;
   }
   @keyframes slideUp {
     from { opacity:0; transform:translateX(-50%) translateY(16px); }
@@ -214,6 +296,61 @@
   .info-stat-value { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px; margin-top:2px; line-height:1.2; }
   .info-stat-value.small { font-size:12px; font-family:'Barlow',sans-serif; font-weight:500; }
   .info-stat.full { grid-column:1/-1; }
+
+  /* Aviso de versión nueva del Service Worker. */
+  #sw-update {
+    position:fixed; left:50%; bottom:calc(20px + var(--safe-bottom));
+    transform:translateX(-50%) translateY(24px);
+    z-index:2100; display:flex; align-items:center; gap:12px;
+    padding:10px 12px 10px 18px; border-radius:999px;
+    background:rgba(17,24,39,0.97); backdrop-filter:blur(12px);
+    border:1px solid var(--accent); color:var(--text);
+    font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:14px;
+    white-space:nowrap; box-shadow:0 6px 24px rgba(0,0,0,0.55);
+    opacity:0; pointer-events:none; transition:opacity .3s, transform .3s;
+  }
+  #sw-update.visible { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+  #sw-update button {
+    background:var(--accent); color:#0a0e1a; border:none; cursor:pointer;
+    padding:6px 14px; border-radius:999px;
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:13px;
+    letter-spacing:.4px; touch-action:manipulation;
+  }
+
+  /* Aviso de ubicación aproximada. Invita a usar "¿Ubicación incorrecta?"
+     justo en las estaciones donde la coordenada no está verificada. */
+  .svc-aprox {
+    display:flex; align-items:center; gap:7px;
+    margin-top:10px; padding:8px 11px; border-radius:8px;
+    background:rgba(245,158,11,0.10); border:1px solid rgba(245,158,11,0.35);
+    font-size:11px; color:#f59e0b; line-height:1.4;
+  }
+  .svc-aprox b { font-weight:700; }
+
+  /* ── SERVICIOS DE LA ESTACIÓN ── */
+  #info-card-services { margin-top:10px; }
+  .svc-group { margin-top:8px; }
+  .svc-group-title {
+    display:flex; align-items:center; gap:6px;
+    font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.8px;
+    margin-bottom:5px;
+  }
+  .svc-chips { display:flex; flex-wrap:wrap; gap:5px; }
+  .svc-chip {
+    display:flex; align-items:center; gap:5px;
+    background:var(--surface2); border:1px solid var(--border); border-radius:999px;
+    padding:4px 10px; font-size:12px; line-height:1.3;
+  }
+  .svc-chip .svc-icon { font-size:12px; }
+  /* Servicios confirmados como ausentes: se muestran atenuados y tachados,
+     para distinguir "no hay" de "no sabemos". */
+  .svc-chip.svc-no { opacity:0.45; text-decoration:line-through; }
+  .svc-empty {
+    background:var(--surface2); border:1px dashed var(--border); border-radius:8px;
+    padding:9px 11px; font-size:11px; color:var(--muted); line-height:1.45;
+  }
+  .svc-empty strong { color:var(--text); font-weight:600; }
+
   #info-card-footer { display:flex; gap:8px; margin-top:12px; }
   #info-card-go-btn {
     flex:1; display:flex; align-items:center; justify-content:center; gap:7px;
@@ -258,7 +395,7 @@
     position:fixed; inset:0; z-index:900;
     background:rgba(0,0,0,0.55); backdrop-filter:blur(4px);
     display:none; align-items:flex-end; justify-content:center;
-    padding-bottom:20px;
+    padding-bottom:calc(20px + var(--safe-bottom));
   }
   #correction-overlay.visible { display:flex; animation:fadeIn 0.2s ease; }
   #correction-panel {
@@ -295,7 +432,7 @@
   #correction-cancel-btn { background:none; color:var(--muted); border:1px solid var(--border); }
   #correction-cancel-btn:hover { color:var(--text); border-color:var(--text); }
   #map-pick-banner {
-    position:fixed; top:68px; left:50%; transform:translateX(-50%);
+    position:fixed; top:calc(var(--top-offset) + 12px); left:50%; transform:translateX(-50%);
     z-index:950; background:rgba(245,158,11,0.95); color:#0a0e1a;
     padding:10px 20px; border-radius:10px; font-family:'Barlow Condensed',sans-serif;
     font-weight:700; font-size:15px; white-space:nowrap; pointer-events:none;
@@ -306,7 +443,7 @@
 
   /* ── LOCATION TOAST ── */
   #location-toast {
-    position:fixed; top:72px; left:50%; transform:translateX(-50%);
+    position:fixed; top:calc(var(--top-offset) + 16px); left:50%; transform:translateX(-50%);
     z-index:700; background:rgba(17,24,39,0.97); backdrop-filter:blur(12px);
     border:1px solid var(--border); border-radius:10px;
     padding:10px 18px; font-size:13px; white-space:nowrap;
@@ -318,7 +455,7 @@
 
   /* ── LEGEND ── */
   #legend-wrap {
-    position:fixed; bottom:20px; left:16px; z-index:600;
+    position:fixed; bottom:calc(20px + var(--safe-bottom)); left:calc(16px + var(--safe-left)); z-index:600;
     display:flex; align-items:stretch;
     touch-action:none; user-select:none;
   }
@@ -356,7 +493,7 @@
 
   /* ── LEGEND TAB (visible when collapsed) ── */
   #legend-tab {
-    position:fixed; bottom:20px; left:0; z-index:600;
+    position:fixed; bottom:calc(20px + var(--safe-bottom)); left:var(--safe-left); z-index:600;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     gap:6px; padding:10px 7px;
     background:rgba(10,14,26,0.93); backdrop-filter:blur(16px);
@@ -480,6 +617,7 @@
     </div>
   </div>
   <div id="info-card-body"></div>
+  <div id="info-card-services"></div>
   <div id="info-card-footer">
     <button id="info-card-go-btn" onclick="flyToStation()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -546,137 +684,497 @@
 <!-- LOCATION TOAST -->
 <div id="location-toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="vendor/leaflet/leaflet.min.js"></script>
 <script>
 // ── DATA ─────────────────────────────────────────────────────────────────────
-// Colores exactos del mapa oficial del Metro de Medellín (foto estación Estadio)
+/* DB:START */
+// Generado por scripts/build-data.mjs · NO EDITAR A MANO.
+// Fuente: data/lines.json, data/stations.json, data/services.json, data/fares.json
+// Regenerar con: npm run data:build
+const DB = {
+  catalogo: {
+    "version": 1,
+    "_comentario": "Taxonomía de servicios de estación. Las claves de 'servicios' en stations.json deben existir aquí; scripts/validate-data.mjs rechaza las que no. Ver data/README.md para la convención true/false/null.",
+    "categorias": {
+      "accesibilidad": {
+        "etiqueta": "Accesibilidad",
+        "icono": "♿",
+        "orden": 1
+      },
+      "atencion": {
+        "etiqueta": "Atención al usuario",
+        "icono": "🎫",
+        "orden": 2
+      },
+      "comercioYCultura": {
+        "etiqueta": "Comercio y cultura",
+        "icono": "🛍️",
+        "orden": 5
+      },
+      "comodidad": {
+        "etiqueta": "Comodidades",
+        "icono": "🚻",
+        "orden": 3
+      },
+      "movilidad": {
+        "etiqueta": "Movilidad e integración",
+        "icono": "🚲",
+        "orden": 4
+      }
+    },
+    "servicios": {
+      "accesoSillaRuedas": {
+        "etiqueta": "Acceso en silla de ruedas",
+        "icono": "♿",
+        "categoria": "accesibilidad",
+        "descripcion": "Recorrido completo de calle a tren sin escalones."
+      },
+      "anuncioSonoro": {
+        "etiqueta": "Anuncios sonoros",
+        "icono": "🔊",
+        "categoria": "accesibilidad",
+        "descripcion": "Información de llegada y destino por audio."
+      },
+      "ascensor": {
+        "etiqueta": "Ascensor",
+        "icono": "🛗",
+        "categoria": "accesibilidad",
+        "descripcion": "Ascensor para acceder a la plataforma."
+      },
+      "banoAccesible": {
+        "etiqueta": "Baño accesible",
+        "icono": "🚾",
+        "categoria": "accesibilidad",
+        "descripcion": "Baño adaptado para personas con movilidad reducida."
+      },
+      "banos": {
+        "etiqueta": "Baños",
+        "icono": "🚻",
+        "categoria": "comodidad",
+        "descripcion": "Servicios sanitarios para usuarios."
+      },
+      "bebedero": {
+        "etiqueta": "Bebedero",
+        "icono": "🚰",
+        "categoria": "comodidad",
+        "descripcion": "Punto de agua potable."
+      },
+      "bibliometro": {
+        "etiqueta": "Bibliometro",
+        "icono": "📚",
+        "categoria": "comercioYCultura",
+        "descripcion": "Punto de préstamo de libros del Metro."
+      },
+      "cajeroAutomatico": {
+        "etiqueta": "Cajero automático",
+        "icono": "🏦",
+        "categoria": "comodidad",
+        "descripcion": "Cajero bancario dentro de la estación."
+      },
+      "casilleros": {
+        "etiqueta": "Casilleros",
+        "icono": "🔐",
+        "categoria": "comodidad",
+        "descripcion": "Lockers para guardar pertenencias."
+      },
+      "comercio": {
+        "etiqueta": "Comercio",
+        "icono": "🛍️",
+        "categoria": "comercioYCultura",
+        "descripcion": "Locales comerciales dentro de la estación."
+      },
+      "culturaMetro": {
+        "etiqueta": "Cultura Metro",
+        "icono": "🎨",
+        "categoria": "comercioYCultura",
+        "descripcion": "Obra de arte, mural o espacio de exposición."
+      },
+      "encicla": {
+        "etiqueta": "EnCicla",
+        "icono": "🚴",
+        "categoria": "movilidad",
+        "descripcion": "Estación del sistema de bicicletas públicas del AMVA."
+      },
+      "escaleraElectrica": {
+        "etiqueta": "Escalera eléctrica",
+        "icono": "🪜",
+        "categoria": "accesibilidad",
+        "descripcion": "Escaleras eléctricas entre el nivel de calle y la plataforma."
+      },
+      "objetosPerdidos": {
+        "etiqueta": "Objetos perdidos",
+        "icono": "🧳",
+        "categoria": "atencion",
+        "descripcion": "Punto de recepción y entrega de objetos olvidados."
+      },
+      "parqueaderoBicicletas": {
+        "etiqueta": "Cicloparqueadero",
+        "icono": "🚲",
+        "categoria": "movilidad",
+        "descripcion": "Parqueadero de bicicletas para usuarios."
+      },
+      "parqueaderoVehiculos": {
+        "etiqueta": "Parqueadero de vehículos",
+        "icono": "🅿️",
+        "categoria": "movilidad",
+        "descripcion": "Parqueadero de carros o motos asociado a la estación."
+      },
+      "pisoPodotactil": {
+        "etiqueta": "Piso podotáctil",
+        "icono": "⠿",
+        "categoria": "accesibilidad",
+        "descripcion": "Guía táctil en el piso para personas con discapacidad visual."
+      },
+      "primerosAuxilios": {
+        "etiqueta": "Primeros auxilios",
+        "icono": "🚑",
+        "categoria": "atencion",
+        "descripcion": "Puesto de atención en salud."
+      },
+      "puntoAtencionCliente": {
+        "etiqueta": "PAC",
+        "icono": "🛎️",
+        "categoria": "atencion",
+        "descripcion": "Punto de Atención al Cliente: trámites de Cívica, PQRS y atención presencial."
+      },
+      "puntoCivica": {
+        "etiqueta": "Punto Cívica",
+        "icono": "💳",
+        "categoria": "atencion",
+        "descripcion": "Expedición y personalización de la tarjeta Cívica."
+      },
+      "puntoInformacion": {
+        "etiqueta": "Punto de información",
+        "icono": "ℹ️",
+        "categoria": "atencion",
+        "descripcion": "Orientación de viaje. Más básico que un PAC; una estación puede tener uno sin el otro."
+      },
+      "rampaAcceso": {
+        "etiqueta": "Rampa de acceso",
+        "icono": "📐",
+        "categoria": "accesibilidad",
+        "descripcion": "Rampa de pendiente accesible desde la calle."
+      },
+      "recargaAutomatica": {
+        "etiqueta": "Recarga automática",
+        "icono": "🏧",
+        "categoria": "atencion",
+        "descripcion": "Máquina de autorrecarga de la tarjeta Cívica."
+      },
+      "rutasAlimentadoras": {
+        "etiqueta": "Rutas alimentadoras",
+        "icono": "🚌",
+        "categoria": "movilidad",
+        "descripcion": "Buses alimentadores integrados con la tarifa del sistema."
+      },
+      "rutasIntegradas": {
+        "etiqueta": "Rutas integradas",
+        "icono": "🔀",
+        "categoria": "movilidad",
+        "descripcion": "Rutas de bus con integración tarifaria en la estación."
+      },
+      "senalizacionBraille": {
+        "etiqueta": "Señalización en braille",
+        "icono": "⠃",
+        "categoria": "accesibilidad",
+        "descripcion": "Información en braille en accesos, ascensores o barandas."
+      },
+      "taquilla": {
+        "etiqueta": "Taquilla",
+        "icono": "🎫",
+        "categoria": "atencion",
+        "descripcion": "Venta y recarga de tiquetes con personal."
+      },
+      "torniqueteAccesible": {
+        "etiqueta": "Torniquete amplio",
+        "icono": "🚪",
+        "categoria": "accesibilidad",
+        "descripcion": "Paso ancho para sillas de ruedas, coches o equipaje."
+      },
+      "vending": {
+        "etiqueta": "Máquinas dispensadoras",
+        "icono": "🥤",
+        "categoria": "comercioYCultura",
+        "descripcion": "Vending de alimentos o bebidas."
+      },
+      "wifi": {
+        "etiqueta": "WiFi",
+        "icono": "📶",
+        "categoria": "comodidad",
+        "descripcion": "Red inalámbrica pública en la estación."
+      },
+      "zonaEspera": {
+        "etiqueta": "Zona de espera",
+        "icono": "🪑",
+        "categoria": "comodidad",
+        "descripcion": "Sillas o área cubierta de espera."
+      },
+      "zonaTaxis": {
+        "etiqueta": "Zona de taxis",
+        "icono": "🚕",
+        "categoria": "movilidad",
+        "descripcion": "Bahía de taxis en el acceso."
+      }
+    }
+  },
+  tarifas: {
+    "version": 1,
+    "vigencia": "2026",
+    "moneda": "COP",
+    "fuente": "https://www.metrodemedellin.gov.co/usuarios",
+    "actualizado": null,
+    "_comentario": "Las tarifas cambian cada año. Al actualizarlas, subir 'vigencia' y poner 'actualizado' en formato AAAA-MM-DD.",
+    "civica": [
+      {
+        "id": "frecuente",
+        "etiqueta": "Frecuente",
+        "integraciones1a4": 3820,
+        "integraciones5a7": 4570
+      },
+      {
+        "id": "adultoMayor",
+        "etiqueta": "Adulto mayor",
+        "integraciones1a4": 3330,
+        "integraciones5a7": 4080
+      },
+      {
+        "id": "estudiantil",
+        "etiqueta": "Estudiantil",
+        "integraciones1a4": 1600,
+        "integraciones5a7": 2350
+      },
+      {
+        "id": "pcd",
+        "etiqueta": "Persona con discapacidad",
+        "integraciones1a4": 2720,
+        "integraciones5a7": 3470
+      },
+      {
+        "id": "alPortador",
+        "etiqueta": "Al portador / Eventual",
+        "integraciones1a4": 4400,
+        "integraciones5a7": 5150
+      }
+    ],
+    "especiales": {
+      "cableArvi": {
+        "linea": "L",
+        "etiqueta": "Cable Arví (Línea L)",
+        "nota": "Tarifa independiente: no está incluida en la integración del sistema.",
+        "tarifas": [
+          {
+            "id": "estratos123Amva",
+            "valor": 3900,
+            "etiqueta": "Estratos 1, 2 y 3 del AMVA"
+          },
+          {
+            "id": "nacionales",
+            "valor": 11900,
+            "etiqueta": "Nacionales / Cívica personalizada"
+          },
+          {
+            "id": "extranjeros",
+            "valor": 26700,
+            "etiqueta": "Extranjeros / Al portador"
+          }
+        ]
+      }
+    }
+  },
+  lineas: [
+    {"id":"A","nombre":"Línea A","color":"#1e4fa0","tipo":"metro","tramo":"Niquía ↔ La Estrella","estado":"operativa","bicicletaPermitida":true,"tarifa":"integrada","horario":{"nota":null,"noOpera":[],"lunesASabado":{"cierre":"23:00","apertura":"04:30"},"domingosYFestivos":{"cierre":"22:00","apertura":"05:00"}},"estaciones":["niquia","bello","madera","acevedo","tricentenario","caribe","universidad","hospital","prado","parque-berrio","san-antonio","alpujarra","exposiciones","industriales","poblado","aguacatala","ayura","envigado","itagui","sabaneta","la-estrella"]},
+    {"id":"B","nombre":"Línea B","color":"#f07830","tipo":"metro","tramo":"San Antonio ↔ San Javier","estado":"operativa","bicicletaPermitida":true,"tarifa":"integrada","horario":{"nota":null,"noOpera":[],"lunesASabado":{"cierre":"23:00","apertura":"04:30"},"domingosYFestivos":{"cierre":"22:00","apertura":"05:00"}},"estaciones":["san-antonio","cisneros","suramericana","estadio","floresta","santa-lucia","san-javier"]},
+    {"id":"H","nombre":"Línea H","color":"#c8387a","tipo":"cable","tramo":"Oriente ↔ Villa Sierra","estado":"operativa","bicicletaPermitida":true,"tarifa":"integrada","horario":{"nota":null,"noOpera":[],"lunesASabado":{"cierre":"23:00","apertura":"04:30"},"domingosYFestivos":{"cierre":"22:00","apertura":"09:00"}},"estaciones":["oriente","las-torres","villa-sierra"]},
+    {"id":"J","nombre":"Línea J","color":"#c8a020","tipo":"cable","tramo":"San Javier ↔ La Aurora","estado":"operativa","bicicletaPermitida":true,"tarifa":"integrada","horario":{"nota":null,"noOpera":[],"lunesASabado":{"cierre":"23:00","apertura":"04:30"},"domingosYFestivos":{"cierre":"22:00","apertura":"09:00"}},"estaciones":["san-javier","juan-xxiii","vallejuelos","la-aurora"]},
+    {"id":"K","nombre":"Línea K","color":"#5aaa28","tipo":"cable","tramo":"Acevedo ↔ Santo Domingo","estado":"operativa","bicicletaPermitida":true,"tarifa":"integrada","horario":{"nota":null,"noOpera":[],"lunesASabado":{"cierre":"23:00","apertura":"04:30"},"domingosYFestivos":{"cierre":"22:00","apertura":"08:30"}},"estaciones":["acevedo","andalucia","popular","santo-domingo"]},
+    {"id":"L","nombre":"Línea L","color":"#8a7828","tipo":"cable","tramo":"Santo Domingo ↔ Arví","estado":"operativa","bicicletaPermitida":false,"tarifa":"especial","horario":{"nota":"Servicio turístico al Parque Arví.","noOpera":["martes"],"lunesASabado":{"cierre":"18:00","apertura":"09:00"},"domingosYFestivos":{"cierre":"18:00","apertura":"08:30"}},"estaciones":["santo-domingo","arvi"]},
+    {"id":"M","nombre":"Línea M","color":"#282870","tipo":"cable","tramo":"Miraflores ↔ Trece de Noviembre","estado":"operativa","bicicletaPermitida":true,"tarifa":"integrada","horario":{"nota":null,"noOpera":[],"lunesASabado":{"cierre":"23:00","apertura":"04:30"},"domingosYFestivos":{"cierre":"22:00","apertura":"09:00"}},"estaciones":["miraflores","el-pinal","trece-de-noviembre"]},
+    {"id":"P","nombre":"Línea P","color":"#d01818","tipo":"cable","tramo":"Acevedo ↔ El Progreso","estado":"en construcción","bicicletaPermitida":false,"tarifa":"integrada","horario":null,"estaciones":["acevedo","doce-de-octubre","el-progreso"]},
+    {"id":"T","nombre":"Línea T","color":"#1e8040","tipo":"tranvia","tramo":"San Antonio ↔ Oriente","estado":"operativa","bicicletaPermitida":false,"tarifa":"integrada","horario":{"nota":null,"noOpera":[],"lunesASabado":{"cierre":"23:00","apertura":"04:30"},"domingosYFestivos":{"cierre":"22:00","apertura":"05:00"}},"estaciones":["san-antonio","bicentenario","buenos-aires","miraflores","loyola","alejandro-echavarria","oriente"]},
+    {"id":"O","nombre":"Línea O","color":"#28b4d0","tipo":"tranvia","tramo":"Caribe ↔ La Palma (Av. 80)","estado":"operativa","bicicletaPermitida":false,"tarifa":"integrada","horario":{"nota":null,"noOpera":[],"lunesASabado":{"cierre":"23:00","apertura":"04:30"},"domingosYFestivos":{"cierre":"22:00","apertura":"05:00"}},"estaciones":["caribe","cordoba","pilarica","ciudadela-universitaria","facultad-de-minas","los-colores","calasanz","integracion-floresta","los-pinos","santa-lucia","la-palma"]},
+    {"id":"1","nombre":"Línea 1","color":"#287888","tipo":"bus","tramo":"U. de M. ↔ Parque Aranjuez (Av. del Ferrocarril)","estado":"operativa","bicicletaPermitida":false,"tarifa":"integrada","horario":{"nota":null,"noOpera":[],"lunesASabado":{"cierre":"23:00","apertura":"04:30"},"domingosYFestivos":{"cierre":"22:00","apertura":"05:00"}},"estaciones":["u-de-m","integracion","chagualo","ruta-n-u-de-a","universal","parque-aranjuez"]},
+    {"id":"2","nombre":"Línea 2","color":"#50c0c0","tipo":"bus","tramo":"U. de M. ↔ Parque Aranjuez (Av. Oriental)","estado":"operativa","bicicletaPermitida":false,"tarifa":"integrada","horario":{"nota":null,"noOpera":[],"lunesASabado":{"cierre":"23:00","apertura":"04:30"},"domingosYFestivos":{"cierre":"22:00","apertura":"05:00"}},"estaciones":["u-de-m","san-jose","la-playa","catedral","minorista","berlin","las-esmeraldas","manrique","gardel","palos-verdes","parque-aranjuez"]}
+  ],
+  estaciones: [
+    {"id":"acevedo","nombre":"Acevedo","coordenadas":{"lat":6.2999,"lng":-75.55865},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Acevedo), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A","Línea K","Línea P"],"transbordo":true},
+    {"id":"aguacatala","nombre":"Aguacatala","coordenadas":{"lat":6.194,"lng":-75.58178},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":true,"servicios":{"parqueaderoBicicletas":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Aguacatala), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":true},
+    {"id":"alejandro-echavarria","nombre":"Alejandro Echavarría","coordenadas":{"lat":6.2366,"lng":-75.5428},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea T"],"transbordo":false},
+    {"id":"alpujarra","nombre":"Alpujarra","coordenadas":{"lat":6.24293,"lng":-75.57142},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Alpujarra), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"andalucia","nombre":"Andalucía","coordenadas":{"lat":6.29633,"lng":-75.55187},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"parqueaderoBicicletas":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Andalucía), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea K"],"transbordo":false},
+    {"id":"arvi","nombre":"Arví","coordenadas":{"lat":6.28134,"lng":-75.50301},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"parqueaderoBicicletas":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Arví), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea L"],"transbordo":false},
+    {"id":"ayura","nombre":"Ayurá","coordenadas":{"lat":6.18616,"lng":-75.58606},"municipio":"Envigado","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Estación del Metro Ayurá), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"bello","nombre":"Bello","coordenadas":{"lat":6.33009,"lng":-75.55364},"municipio":"Bello","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Bello), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"berlin","nombre":"Berlín","coordenadas":{"lat":6.28288,"lng":-75.55291},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Berlín), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 2"],"transbordo":false},
+    {"id":"bicentenario","nombre":"Bicentenario","coordenadas":{"lat":6.2453,"lng":-75.56375},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea T"],"transbordo":false},
+    {"id":"buenos-aires","nombre":"Buenos Aires","coordenadas":{"lat":6.244,"lng":-75.557},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea T"],"transbordo":false},
+    {"id":"calasanz","nombre":"Calasanz","coordenadas":{"lat":6.2515,"lng":-75.5935},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea O"],"transbordo":false},
+    {"id":"caribe","nombre":"Caribe","coordenadas":{"lat":6.27832,"lng":-75.56941},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Caribe), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A","Línea O"],"transbordo":true},
+    {"id":"catedral","nombre":"Catedral","coordenadas":{"lat":6.25289,"lng":-75.56256},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Catedral), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 2"],"transbordo":false},
+    {"id":"chagualo","nombre":"Chagualo","coordenadas":{"lat":6.26073,"lng":-75.56915},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Chagualo), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 1"],"transbordo":false},
+    {"id":"cisneros","nombre":"Cisneros","coordenadas":{"lat":6.24903,"lng":-75.57511},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Cisneros), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea B"],"transbordo":false},
+    {"id":"ciudadela-universitaria","nombre":"Ciudadela Universitaria","coordenadas":{"lat":6.2705,"lng":-75.579},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea O"],"transbordo":false},
+    {"id":"cordoba","nombre":"Córdoba","coordenadas":{"lat":6.284,"lng":-75.5635},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea O"],"transbordo":false},
+    {"id":"doce-de-octubre","nombre":"Doce de Octubre","coordenadas":{"lat":6.30424,"lng":-75.57604},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Doce de Octubre), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea P"],"transbordo":false},
+    {"id":"el-pinal","nombre":"El Pinal","coordenadas":{"lat":6.24529,"lng":-75.54455},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (El Pinal), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea M"],"transbordo":false},
+    {"id":"el-progreso","nombre":"El Progreso","coordenadas":{"lat":6.30598,"lng":-75.58222},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (El Progreso), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea P"],"transbordo":false},
+    {"id":"envigado","nombre":"Envigado","coordenadas":{"lat":6.17472,"lng":-75.59706},"municipio":"Envigado","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Estación del Metro Envigado), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"estadio","nombre":"Estadio","coordenadas":{"lat":6.25335,"lng":-75.58823},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true,"parqueaderoBicicletas":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Estadio), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea B"],"transbordo":false},
+    {"id":"exposiciones","nombre":"Exposiciones","coordenadas":{"lat":6.23842,"lng":-75.57317},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Exposiciones), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"facultad-de-minas","nombre":"Facultad de Minas","coordenadas":{"lat":6.264,"lng":-75.5835},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea O"],"transbordo":false},
+    {"id":"floresta","nombre":"Floresta","coordenadas":{"lat":6.2587,"lng":-75.59774},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Floresta), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea B"],"transbordo":false},
+    {"id":"gardel","nombre":"Gardel","coordenadas":{"lat":6.26767,"lng":-75.55501},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Gardel), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 2"],"transbordo":false},
+    {"id":"hospital","nombre":"Hospital","coordenadas":{"lat":6.26388,"lng":-75.56337},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Hospital), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"industriales","nombre":"Industriales","coordenadas":{"lat":6.23004,"lng":-75.57563},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true,"parqueaderoBicicletas":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Industriales), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"integracion","nombre":"Integración","coordenadas":{"lat":6.25221,"lng":-75.56851},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea 1"],"transbordo":false},
+    {"id":"integracion-floresta","nombre":"Integración Floresta","coordenadas":{"lat":6.248,"lng":-75.599},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":true,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":"integracionBuses heredado del dataset original de index.html; sin fuente documentada","actualizado":null,"transferencia":null,"lineas":["Línea O"],"transbordo":true},
+    {"id":"itagui","nombre":"Itagüí","coordenadas":{"lat":6.163,"lng":-75.60659},"municipio":"Itagüí","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"parqueaderoBicicletas":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Estación del Metro Itagüí), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"juan-xxiii","nombre":"Juan XXIII","coordenadas":{"lat":6.26565,"lng":-75.61369},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Juan XXIII), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea J"],"transbordo":false},
+    {"id":"la-aurora","nombre":"La Aurora","coordenadas":{"lat":6.28113,"lng":-75.61418},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (La Aurora), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea J"],"transbordo":false},
+    {"id":"la-estrella","nombre":"La Estrella","coordenadas":{"lat":6.15278,"lng":-75.62633},"municipio":"La Estrella","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Estación de Metro de la Estrella), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"la-palma","nombre":"La Palma","coordenadas":{"lat":6.23114,"lng":-75.60102},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (La Palma), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea O"],"transbordo":false},
+    {"id":"la-playa","nombre":"La Playa","coordenadas":{"lat":6.24956,"lng":-75.56449},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (La Playa), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 2"],"transbordo":false},
+    {"id":"las-esmeraldas","nombre":"Las Esmeraldas","coordenadas":{"lat":6.27837,"lng":-75.55315},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Las Esmeraldas), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 2"],"transbordo":false},
+    {"id":"las-torres","nombre":"Las Torres","coordenadas":{"lat":6.2366,"lng":-75.53636},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":"En el dataset original figuraba como «Las Esperanzas»; OSM y el trazado de la línea confirman «Las Torres».","verificado":true,"fuente":"OpenStreetMap (Las Torres), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea H"],"transbordo":false},
+    {"id":"los-colores","nombre":"Los Colores","coordenadas":{"lat":6.257,"lng":-75.589},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea O"],"transbordo":false},
+    {"id":"los-pinos","nombre":"Los Pinos","coordenadas":{"lat":6.244,"lng":-75.6045},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea O"],"transbordo":false},
+    {"id":"loyola","nombre":"Loyola","coordenadas":{"lat":6.2386,"lng":-75.5468},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea T"],"transbordo":false},
+    {"id":"madera","nombre":"Madera","coordenadas":{"lat":6.31586,"lng":-75.5553},"municipio":"Bello","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Madera), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"manrique","nombre":"Manrique","coordenadas":{"lat":6.27324,"lng":-75.55405},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Manrique), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 2"],"transbordo":false},
+    {"id":"minorista","nombre":"Minorista","coordenadas":{"lat":6.25613,"lng":-75.57317},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Minorista), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 2"],"transbordo":false},
+    {"id":"miraflores","nombre":"Miraflores","coordenadas":{"lat":6.24188,"lng":-75.54921},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Miraflores), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea M","Línea T"],"transbordo":true},
+    {"id":"niquia","nombre":"Niquía","coordenadas":{"lat":6.33785,"lng":-75.54426},"municipio":"Bello","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"parqueaderoBicicletas":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Niquía), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"oriente","nombre":"Oriente","coordenadas":{"lat":6.23329,"lng":-75.54008},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Oriente), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea H","Línea T"],"transbordo":true},
+    {"id":"palos-verdes","nombre":"Palos Verdes","coordenadas":{"lat":6.26205,"lng":-75.55589},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Palos Verdes), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 2"],"transbordo":false},
+    {"id":"parque-aranjuez","nombre":"Parque Aranjuez","coordenadas":{"lat":6.28521,"lng":-75.55661},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Parque de Aranjuez), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 1","Línea 2"],"transbordo":true},
+    {"id":"parque-berrio","nombre":"Parque Berrío","coordenadas":{"lat":6.2505,"lng":-75.56821},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Parque Berrío), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"pilarica","nombre":"Pilarica","coordenadas":{"lat":6.277,"lng":-75.5725},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea O"],"transbordo":false},
+    {"id":"poblado","nombre":"Poblado","coordenadas":{"lat":6.21198,"lng":-75.57812},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Poblado), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"popular","nombre":"Popular","coordenadas":{"lat":6.29516,"lng":-75.5481},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Popular), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea K"],"transbordo":false},
+    {"id":"prado","nombre":"Prado","coordenadas":{"lat":6.25684,"lng":-75.56616},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Prado), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"ruta-n-u-de-a","nombre":"Ruta N · U. de A.","coordenadas":{"lat":6.27,"lng":-75.5655},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea 1"],"transbordo":false},
+    {"id":"sabaneta","nombre":"Sabaneta","coordenadas":{"lat":6.15774,"lng":-75.61614},"municipio":"Sabaneta","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Sabaneta), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"san-antonio","nombre":"San Antonio","coordenadas":{"lat":6.24717,"lng":-75.56968},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (San Antonio), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A","Línea B","Línea T"],"transbordo":true},
+    {"id":"san-javier","nombre":"San Javier","coordenadas":{"lat":6.25686,"lng":-75.61382},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (San Javier), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea B","Línea J"],"transbordo":true},
+    {"id":"san-jose","nombre":"San José","coordenadas":{"lat":6.24711,"lng":-75.56614},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (San José), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 2"],"transbordo":false},
+    {"id":"santa-lucia","nombre":"Santa Lucía","coordenadas":{"lat":6.25808,"lng":-75.60375},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Santa Lucía), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea B","Línea O"],"transbordo":true},
+    {"id":"santo-domingo","nombre":"Santo Domingo","coordenadas":{"lat":6.29296,"lng":-75.54181},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Santo Domingo), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea K","Línea L"],"transbordo":true},
+    {"id":"suramericana","nombre":"Suramericana","coordenadas":{"lat":6.25297,"lng":-75.58293},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true,"parqueaderoBicicletas":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Suramericana), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea B"],"transbordo":false},
+    {"id":"trece-de-noviembre","nombre":"Trece de Noviembre","coordenadas":{"lat":6.24766,"lng":-75.54137},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Trece de Noviembre), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea M"],"transbordo":false},
+    {"id":"tricentenario","nombre":"Tricentenario","coordenadas":{"lat":6.29031,"lng":-75.56471},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Tricentenario), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"u-de-m","nombre":"U. de M.","coordenadas":{"lat":6.23076,"lng":-75.60902},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"parqueaderoBicicletas":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Universidad de Medellín), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea 1","Línea 2"],"transbordo":true},
+    {"id":"universal","nombre":"Universal","coordenadas":{"lat":6.281,"lng":-75.5638},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":false,"fuente":null,"actualizado":null,"transferencia":null,"lineas":["Línea 1"],"transbordo":false},
+    {"id":"universidad","nombre":"Universidad","coordenadas":{"lat":6.26941,"lng":-75.5658},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{"encicla":true,"parqueaderoBicicletas":true},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Universidad), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea A"],"transbordo":false},
+    {"id":"vallejuelos","nombre":"Vallejuelos","coordenadas":{"lat":6.2754,"lng":-75.61394},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Vallejuelos), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea J"],"transbordo":false},
+    {"id":"villa-sierra","nombre":"Villa Sierra","coordenadas":{"lat":6.23487,"lng":-75.52871},"municipio":"Medellín","estructura":null,"direccion":null,"colocadaCon":[],"integracionBuses":null,"servicios":{},"horarioEspecial":null,"notas":null,"verificado":true,"fuente":"OpenStreetMap (Villa Sierra), 2026-08-12","actualizado":"2026-08-12","transferencia":null,"lineas":["Línea H"],"transbordo":false}
+  ],
+};
+
+DB.supabase = {"url":"https://vbcjohazumibebaulzcp.supabase.co","clave":"sb_publishable_U0ICS2mVJoL6RBpSOJvXCw_V_B7oVZk"};
+
+DB.estacionPorId = Object.fromEntries(DB.estaciones.map(e => [e.id, e]));
+DB.lineaPorNombre = Object.fromEntries(DB.lineas.map(l => [l.nombre, l]));
+
+// Vistas con la forma que espera el código del mapa.
 const LINES = {
-  // ── METRO ──
-  'Línea A': { color:'#1e4fa0', type:'metro',    tramo:'Niquía ↔ La Estrella',                               horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'$3.820 frecuente · $4.400 portador', bici:true  },
-  'Línea B': { color:'#f07830', type:'metro',    tramo:'San Antonio ↔ San Javier',                           horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'$3.820 frecuente · $4.400 portador', bici:true  },
-  // ── METROCABLE ──
-  'Línea H': { color:'#c8387a', type:'cable',    tramo:'Oriente ↔ Villa Sierra',                             horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 9:00am–10:00pm', tarifa:'Incluida en tarifa Metro',           bici:true  },
-  'Línea J': { color:'#c8a020', type:'cable',    tramo:'San Javier ↔ La Aurora',                             horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 9:00am–10:00pm', tarifa:'Incluida en tarifa Metro',           bici:true  },
-  'Línea K': { color:'#5aaa28', type:'cable',    tramo:'Acevedo ↔ Santo Domingo',                            horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 8:30am–10:00pm', tarifa:'Incluida en tarifa Metro',           bici:true  },
-  'Línea L': { color:'#8a7828', type:'cable',    tramo:'Santo Domingo ↔ Arví',                               horario:'Lun/Mié-Sáb 9:00am–6:00pm · Dom/Fest 8:30am–6:00pm · ⚠️ No opera martes', tarifa:'Estratos 1-3: $3.900 · Nacionales: $11.900 · Extranjeros: $26.700', bici:false },
-  'Línea M': { color:'#282870', type:'cable',    tramo:'Miraflores ↔ Trece de Noviembre',                    horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 9:00am–10:00pm', tarifa:'Incluida en tarifa Metro',           bici:true  },
-  'Línea P': { color:'#d01818', type:'cable',    tramo:'Acevedo ↔ El Progreso (en construcción)',            horario:'Próximamente',                                       tarifa:'Incluida en tarifa Metro',           bici:false },
-  // ── TRANVÍA Y BUS ELÉCTRICO ──
-  'Línea T': { color:'#1e8040', type:'tranvia',  tramo:'San Antonio ↔ Oriente',                              horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'Incluida en tarifa Metro',           bici:false },
-  'Línea O': { color:'#28b4d0', type:'tranvia',  tramo:'Caribe ↔ La Palma (Av. 80)',                         horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'$3.820 frecuente · $4.400 portador', bici:false },
-  // ── BUS BRT ──
-  'Línea 1': { color:'#287888', type:'bus',      tramo:'U. de M. ↔ Parque Aranjuez (Av. del Ferrocarril)',  horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'$3.820 frecuente · $4.400 portador', bici:false },
-  'Línea 2': { color:'#50c0c0', type:'bus',      tramo:'U. de M. ↔ Parque Aranjuez (Av. Oriental)',         horario:'Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm', tarifa:'$3.820 frecuente · $4.400 portador', bici:false },
+  "Línea A": {"color":"#1e4fa0","type":"metro","tramo":"Niquía ↔ La Estrella","horario":"Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm","tarifa":"$3.820 frecuente · $4.400 al portador","bici":true,"estado":"operativa"},
+  "Línea B": {"color":"#f07830","type":"metro","tramo":"San Antonio ↔ San Javier","horario":"Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm","tarifa":"$3.820 frecuente · $4.400 al portador","bici":true,"estado":"operativa"},
+  "Línea H": {"color":"#c8387a","type":"cable","tramo":"Oriente ↔ Villa Sierra","horario":"Lun-Sáb 4:30am–11:00pm · Dom/Fest 9:00am–10:00pm","tarifa":"$3.820 frecuente · $4.400 al portador","bici":true,"estado":"operativa"},
+  "Línea J": {"color":"#c8a020","type":"cable","tramo":"San Javier ↔ La Aurora","horario":"Lun-Sáb 4:30am–11:00pm · Dom/Fest 9:00am–10:00pm","tarifa":"$3.820 frecuente · $4.400 al portador","bici":true,"estado":"operativa"},
+  "Línea K": {"color":"#5aaa28","type":"cable","tramo":"Acevedo ↔ Santo Domingo","horario":"Lun-Sáb 4:30am–11:00pm · Dom/Fest 8:30am–10:00pm","tarifa":"$3.820 frecuente · $4.400 al portador","bici":true,"estado":"operativa"},
+  "Línea L": {"color":"#8a7828","type":"cable","tramo":"Santo Domingo ↔ Arví","horario":"Lun-Sáb 9:00am–6:00pm · Dom/Fest 8:30am–6:00pm · ⚠️ No opera martes","tarifa":"Estratos 1, 2 y 3 del AMVA: $3.900 · Nacionales / Cívica personalizada: $11.900 · Extranjeros / Al portador: $26.700","bici":false,"estado":"operativa"},
+  "Línea M": {"color":"#282870","type":"cable","tramo":"Miraflores ↔ Trece de Noviembre","horario":"Lun-Sáb 4:30am–11:00pm · Dom/Fest 9:00am–10:00pm","tarifa":"$3.820 frecuente · $4.400 al portador","bici":true,"estado":"operativa"},
+  "Línea P": {"color":"#d01818","type":"cable","tramo":"Acevedo ↔ El Progreso (en construcción)","horario":"Próximamente","tarifa":"Próximamente","bici":false,"estado":"en construcción"},
+  "Línea T": {"color":"#1e8040","type":"tranvia","tramo":"San Antonio ↔ Oriente","horario":"Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm","tarifa":"$3.820 frecuente · $4.400 al portador","bici":false,"estado":"operativa"},
+  "Línea O": {"color":"#28b4d0","type":"tranvia","tramo":"Caribe ↔ La Palma (Av. 80)","horario":"Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm","tarifa":"$3.820 frecuente · $4.400 al portador","bici":false,"estado":"operativa"},
+  "Línea 1": {"color":"#287888","type":"bus","tramo":"U. de M. ↔ Parque Aranjuez (Av. del Ferrocarril)","horario":"Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm","tarifa":"$3.820 frecuente · $4.400 al portador","bici":false,"estado":"operativa"},
+  "Línea 2": {"color":"#50c0c0","type":"bus","tramo":"U. de M. ↔ Parque Aranjuez (Av. Oriental)","horario":"Lun-Sáb 4:30am–11:00pm · Dom/Fest 5:00am–10:00pm","tarifa":"$3.820 frecuente · $4.400 al portador","bici":false,"estado":"operativa"},
 };
 
 const STATIONS = [
-  // ── LÍNEA A · Metro (Niquía → La Estrella) ──
-  { name:'Niquía',               line:'Línea A', lat:6.33825, lng:-75.53378, interchange:false },
-  { name:'Bello',                line:'Línea A', lat:6.32955, lng:-75.53495, interchange:false },
-  { name:'Madera',               line:'Línea A', lat:6.31858, lng:-75.53747, interchange:false },
-  { name:'Acevedo',              line:'Línea A', lat:6.30738, lng:-75.54342, interchange:true  },
-  { name:'Tricentenario',        line:'Línea A', lat:6.29880, lng:-75.55050, interchange:false },
-  { name:'Caribe',               line:'Línea A', lat:6.29245, lng:-75.55641, interchange:true  },
-  { name:'Universidad',          line:'Línea A', lat:6.28484, lng:-75.56304, interchange:false },
-  { name:'Hospital',             line:'Línea A', lat:6.27413, lng:-75.56713, interchange:false },
-  { name:'Prado',                line:'Línea A', lat:6.26713, lng:-75.56723, interchange:false },
-  { name:'Parque Berrío',        line:'Línea A', lat:6.25221, lng:-75.56851, interchange:true  },
-  { name:'San Antonio',          line:'Línea A', lat:6.24650, lng:-75.56897, interchange:true  },
-  { name:'Alpujarra',            line:'Línea A', lat:6.24375, lng:-75.57183, interchange:true  },
-  { name:'Exposiciones',         line:'Línea A', lat:6.23782, lng:-75.57329, interchange:false },
-  { name:'Industriales',         line:'Línea A', lat:6.23005, lng:-75.57349, interchange:false },
-  { name:'Poblado',              line:'Línea A', lat:6.21301, lng:-75.57123, interchange:false },
-  { name:'Aguacatala',           line:'Línea A', lat:6.20127, lng:-75.57213, interchange:true  },
-  { name:'Ayurá',                line:'Línea A', lat:6.18997, lng:-75.57164, interchange:false },
-  { name:'Envigado',             line:'Línea A', lat:6.17424, lng:-75.58236, interchange:false },
-  { name:'Itagüí',               line:'Línea A', lat:6.16698, lng:-75.58949, interchange:false },
-  { name:'Sabaneta',             line:'Línea A', lat:6.15058, lng:-75.60820, interchange:false },
-  { name:'La Estrella',          line:'Línea A', lat:6.13623, lng:-75.61969, interchange:false },
-
-  // ── LÍNEA B · Metro (San Antonio → San Javier) ──
-  { name:'San Antonio',          line:'Línea B', lat:6.24650, lng:-75.56897, interchange:true  },
-  { name:'Cisneros',             line:'Línea B', lat:6.24830, lng:-75.57543, interchange:false },
-  { name:'Suramericana',         line:'Línea B', lat:6.25062, lng:-75.58285, interchange:false },
-  { name:'Estadio',              line:'Línea B', lat:6.25022, lng:-75.59461, interchange:false },
-  { name:'Floresta',             line:'Línea B', lat:6.25103, lng:-75.60381, interchange:false },
-  { name:'Santa Lucía',          line:'Línea B', lat:6.25100, lng:-75.60680, interchange:false },
-  { name:'San Javier',           line:'Línea B', lat:6.24853, lng:-75.61554, interchange:true  },
-
-  // ── LÍNEA H · Metrocable (Oriente → Villa Sierra) ──
-  { name:'Oriente',              line:'Línea H', lat:6.23500, lng:-75.54382, interchange:true  },
-  { name:'El Pinal',             line:'Línea H', lat:6.23100, lng:-75.53600, interchange:true  },
-  { name:'Las Esperanzas',       line:'Línea H', lat:6.22680, lng:-75.52980, interchange:false },
-  { name:'Villa Sierra',         line:'Línea H', lat:6.22200, lng:-75.52250, interchange:false },
-
-  // ── LÍNEA J · Metrocable (San Javier → La Aurora) ──
-  { name:'San Javier',           line:'Línea J', lat:6.24853, lng:-75.61554, interchange:true  },
-  { name:'Juan XXIII',           line:'Línea J', lat:6.25300, lng:-75.62600, interchange:false },
-  { name:'Vallejuelos',          line:'Línea J', lat:6.25590, lng:-75.63450, interchange:false },
-  { name:'La Aurora',            line:'Línea J', lat:6.25920, lng:-75.64300, interchange:false },
-
-  // ── LÍNEA K · Metrocable (Acevedo → Santo Domingo) ──
-  { name:'Acevedo',              line:'Línea K', lat:6.30738, lng:-75.54342, interchange:true  },
-  { name:'Andalucía',            line:'Línea K', lat:6.30338, lng:-75.53440, interchange:false },
-  { name:'Popular',              line:'Línea K', lat:6.30014, lng:-75.52772, interchange:false },
-  { name:'Santo Domingo',        line:'Línea K', lat:6.29514, lng:-75.51851, interchange:true  },
-
-  // ── LÍNEA L · Metrocable Arví (Santo Domingo → Arví) ──
-  { name:'Santo Domingo',        line:'Línea L', lat:6.29514, lng:-75.51851, interchange:true  },
-  { name:'Arví',                 line:'Línea L', lat:6.26200, lng:-75.48430, interchange:false },
-
-  // ── LÍNEA M · Metrocable (Miraflores → Trece de Noviembre) ──
-  { name:'Miraflores',           line:'Línea M', lat:6.24010, lng:-75.55030, interchange:true  },
-  { name:'El Pinal',             line:'Línea M', lat:6.23100, lng:-75.53600, interchange:true  },
-  { name:'Trece de Noviembre',   line:'Línea M', lat:6.22500, lng:-75.52780, interchange:false },
-
-  // ── LÍNEA P · Metrocable (Acevedo → El Progreso) ──
-  { name:'Acevedo',              line:'Línea P', lat:6.30738, lng:-75.54342, interchange:true  },
-  { name:'Doce de Octubre',      line:'Línea P', lat:6.30200, lng:-75.55800, interchange:false },
-  { name:'El Progreso',          line:'Línea P', lat:6.30800, lng:-75.57200, interchange:false },
-
-  // ── LÍNEA T · Tranvía (San Antonio → Oriente) ──
-  { name:'San Antonio',          line:'Línea T', lat:6.24650, lng:-75.56897, interchange:true  },
-  { name:'Bicentenario',         line:'Línea T', lat:6.24530, lng:-75.56375, interchange:false },
-  { name:'Buenos Aires',         line:'Línea T', lat:6.24400, lng:-75.55700, interchange:false },
-  { name:'Miraflores',           line:'Línea T', lat:6.24010, lng:-75.55030, interchange:true  },
-  { name:'Loyola',               line:'Línea T', lat:6.23860, lng:-75.54680, interchange:false },
-  { name:'Alejandro Echavarría', line:'Línea T', lat:6.23660, lng:-75.54280, interchange:false },
-  { name:'Oriente',              line:'Línea T', lat:6.23500, lng:-75.54382, interchange:true  },
-
-  // ── LÍNEA O · Bus eléctrico (Caribe → La Palma, Av. 80) ──
-  { name:'Caribe',               line:'Línea O', lat:6.29245, lng:-75.55641, interchange:true  },
-  { name:'Córdoba',              line:'Línea O', lat:6.28400, lng:-75.56350, interchange:false },
-  { name:'Pilarica',             line:'Línea O', lat:6.27700, lng:-75.57250, interchange:false },
-  { name:'Ciudadela Universitaria', line:'Línea O', lat:6.27050, lng:-75.57900, interchange:false },
-  { name:'Facultad de Minas',    line:'Línea O', lat:6.26400, lng:-75.58350, interchange:false },
-  { name:'Los Colores',          line:'Línea O', lat:6.25700, lng:-75.58900, interchange:false },
-  { name:'Calasanz',             line:'Línea O', lat:6.25150, lng:-75.59350, interchange:false },
-  { name:'Integración Floresta', line:'Línea O', lat:6.24800, lng:-75.59900, interchange:true  },
-  { name:'Los Pinos',            line:'Línea O', lat:6.24400, lng:-75.60450, interchange:false },
-  { name:'Santa Lucía',          line:'Línea O', lat:6.25100, lng:-75.60680, interchange:true  },
-  { name:'La Palma',             line:'Línea O', lat:6.24100, lng:-75.61200, interchange:false },
-
-  // ── LÍNEA 1 · Bus BRT (U. de M. → Parque Aranjuez, Av. Ferrocarril) ──
-  { name:'U. de M.',             line:'Línea 1', lat:6.24375, lng:-75.57183, interchange:true  },
-  { name:'Integración',          line:'Línea 1', lat:6.25221, lng:-75.56851, interchange:true  },
-  { name:'Chagualo',             line:'Línea 1', lat:6.26100, lng:-75.56700, interchange:false },
-  { name:'Ruta N · U. de A.',   line:'Línea 1', lat:6.27000, lng:-75.56550, interchange:false },
-  { name:'Universal',            line:'Línea 1', lat:6.28100, lng:-75.56380, interchange:false },
-  { name:'Parque Aranjuez',      line:'Línea 1', lat:6.29650, lng:-75.56290, interchange:true  },
-
-  // ── LÍNEA 2 · Bus BRT (U. de M. → Parque Aranjuez, Av. Oriental) ──
-  { name:'U. de M.',             line:'Línea 2', lat:6.24375, lng:-75.57183, interchange:true  },
-  { name:'San José',             line:'Línea 2', lat:6.24900, lng:-75.56600, interchange:false },
-  { name:'La Playa',             line:'Línea 2', lat:6.25150, lng:-75.56300, interchange:false },
-  { name:'Catedral',             line:'Línea 2', lat:6.25400, lng:-75.56050, interchange:false },
-  { name:'Minorista',            line:'Línea 2', lat:6.25700, lng:-75.55750, interchange:false },
-  { name:'Berlín',               line:'Línea 2', lat:6.26800, lng:-75.55300, interchange:false },
-  { name:'Las Esmeraldas',       line:'Línea 2', lat:6.27500, lng:-75.54900, interchange:false },
-  { name:'Manrique',             line:'Línea 2', lat:6.28100, lng:-75.54600, interchange:false },
-  { name:'Gardel',               line:'Línea 2', lat:6.28600, lng:-75.54250, interchange:false },
-  { name:'Palos Verdes',         line:'Línea 2', lat:6.29100, lng:-75.53900, interchange:false },
-  { name:'Parque Aranjuez',      line:'Línea 2', lat:6.29650, lng:-75.56290, interchange:true  },
+    {"id":"niquia","name":"Niquía","line":"Línea A","lat":6.33785,"lng":-75.54426,"interchange":false},
+    {"id":"bello","name":"Bello","line":"Línea A","lat":6.33009,"lng":-75.55364,"interchange":false},
+    {"id":"madera","name":"Madera","line":"Línea A","lat":6.31586,"lng":-75.5553,"interchange":false},
+    {"id":"acevedo","name":"Acevedo","line":"Línea A","lat":6.2999,"lng":-75.55865,"interchange":true},
+    {"id":"tricentenario","name":"Tricentenario","line":"Línea A","lat":6.29031,"lng":-75.56471,"interchange":false},
+    {"id":"caribe","name":"Caribe","line":"Línea A","lat":6.27832,"lng":-75.56941,"interchange":true},
+    {"id":"universidad","name":"Universidad","line":"Línea A","lat":6.26941,"lng":-75.5658,"interchange":false},
+    {"id":"hospital","name":"Hospital","line":"Línea A","lat":6.26388,"lng":-75.56337,"interchange":false},
+    {"id":"prado","name":"Prado","line":"Línea A","lat":6.25684,"lng":-75.56616,"interchange":false},
+    {"id":"parque-berrio","name":"Parque Berrío","line":"Línea A","lat":6.2505,"lng":-75.56821,"interchange":false},
+    {"id":"san-antonio","name":"San Antonio","line":"Línea A","lat":6.24717,"lng":-75.56968,"interchange":true},
+    {"id":"alpujarra","name":"Alpujarra","line":"Línea A","lat":6.24293,"lng":-75.57142,"interchange":false},
+    {"id":"exposiciones","name":"Exposiciones","line":"Línea A","lat":6.23842,"lng":-75.57317,"interchange":false},
+    {"id":"industriales","name":"Industriales","line":"Línea A","lat":6.23004,"lng":-75.57563,"interchange":false},
+    {"id":"poblado","name":"Poblado","line":"Línea A","lat":6.21198,"lng":-75.57812,"interchange":false},
+    {"id":"aguacatala","name":"Aguacatala","line":"Línea A","lat":6.194,"lng":-75.58178,"interchange":true},
+    {"id":"ayura","name":"Ayurá","line":"Línea A","lat":6.18616,"lng":-75.58606,"interchange":false},
+    {"id":"envigado","name":"Envigado","line":"Línea A","lat":6.17472,"lng":-75.59706,"interchange":false},
+    {"id":"itagui","name":"Itagüí","line":"Línea A","lat":6.163,"lng":-75.60659,"interchange":false},
+    {"id":"sabaneta","name":"Sabaneta","line":"Línea A","lat":6.15774,"lng":-75.61614,"interchange":false},
+    {"id":"la-estrella","name":"La Estrella","line":"Línea A","lat":6.15278,"lng":-75.62633,"interchange":false},
+    {"id":"san-antonio","name":"San Antonio","line":"Línea B","lat":6.24717,"lng":-75.56968,"interchange":true},
+    {"id":"cisneros","name":"Cisneros","line":"Línea B","lat":6.24903,"lng":-75.57511,"interchange":false},
+    {"id":"suramericana","name":"Suramericana","line":"Línea B","lat":6.25297,"lng":-75.58293,"interchange":false},
+    {"id":"estadio","name":"Estadio","line":"Línea B","lat":6.25335,"lng":-75.58823,"interchange":false},
+    {"id":"floresta","name":"Floresta","line":"Línea B","lat":6.2587,"lng":-75.59774,"interchange":false},
+    {"id":"santa-lucia","name":"Santa Lucía","line":"Línea B","lat":6.25808,"lng":-75.60375,"interchange":true},
+    {"id":"san-javier","name":"San Javier","line":"Línea B","lat":6.25686,"lng":-75.61382,"interchange":true},
+    {"id":"oriente","name":"Oriente","line":"Línea H","lat":6.23329,"lng":-75.54008,"interchange":true},
+    {"id":"las-torres","name":"Las Torres","line":"Línea H","lat":6.2366,"lng":-75.53636,"interchange":false},
+    {"id":"villa-sierra","name":"Villa Sierra","line":"Línea H","lat":6.23487,"lng":-75.52871,"interchange":false},
+    {"id":"san-javier","name":"San Javier","line":"Línea J","lat":6.25686,"lng":-75.61382,"interchange":true},
+    {"id":"juan-xxiii","name":"Juan XXIII","line":"Línea J","lat":6.26565,"lng":-75.61369,"interchange":false},
+    {"id":"vallejuelos","name":"Vallejuelos","line":"Línea J","lat":6.2754,"lng":-75.61394,"interchange":false},
+    {"id":"la-aurora","name":"La Aurora","line":"Línea J","lat":6.28113,"lng":-75.61418,"interchange":false},
+    {"id":"acevedo","name":"Acevedo","line":"Línea K","lat":6.2999,"lng":-75.55865,"interchange":true},
+    {"id":"andalucia","name":"Andalucía","line":"Línea K","lat":6.29633,"lng":-75.55187,"interchange":false},
+    {"id":"popular","name":"Popular","line":"Línea K","lat":6.29516,"lng":-75.5481,"interchange":false},
+    {"id":"santo-domingo","name":"Santo Domingo","line":"Línea K","lat":6.29296,"lng":-75.54181,"interchange":true},
+    {"id":"santo-domingo","name":"Santo Domingo","line":"Línea L","lat":6.29296,"lng":-75.54181,"interchange":true},
+    {"id":"arvi","name":"Arví","line":"Línea L","lat":6.28134,"lng":-75.50301,"interchange":false},
+    {"id":"miraflores","name":"Miraflores","line":"Línea M","lat":6.24188,"lng":-75.54921,"interchange":true},
+    {"id":"el-pinal","name":"El Pinal","line":"Línea M","lat":6.24529,"lng":-75.54455,"interchange":false},
+    {"id":"trece-de-noviembre","name":"Trece de Noviembre","line":"Línea M","lat":6.24766,"lng":-75.54137,"interchange":false},
+    {"id":"acevedo","name":"Acevedo","line":"Línea P","lat":6.2999,"lng":-75.55865,"interchange":true},
+    {"id":"doce-de-octubre","name":"Doce de Octubre","line":"Línea P","lat":6.30424,"lng":-75.57604,"interchange":false},
+    {"id":"el-progreso","name":"El Progreso","line":"Línea P","lat":6.30598,"lng":-75.58222,"interchange":false},
+    {"id":"san-antonio","name":"San Antonio","line":"Línea T","lat":6.24717,"lng":-75.56968,"interchange":true},
+    {"id":"bicentenario","name":"Bicentenario","line":"Línea T","lat":6.2453,"lng":-75.56375,"interchange":false},
+    {"id":"buenos-aires","name":"Buenos Aires","line":"Línea T","lat":6.244,"lng":-75.557,"interchange":false},
+    {"id":"miraflores","name":"Miraflores","line":"Línea T","lat":6.24188,"lng":-75.54921,"interchange":true},
+    {"id":"loyola","name":"Loyola","line":"Línea T","lat":6.2386,"lng":-75.5468,"interchange":false},
+    {"id":"alejandro-echavarria","name":"Alejandro Echavarría","line":"Línea T","lat":6.2366,"lng":-75.5428,"interchange":false},
+    {"id":"oriente","name":"Oriente","line":"Línea T","lat":6.23329,"lng":-75.54008,"interchange":true},
+    {"id":"caribe","name":"Caribe","line":"Línea O","lat":6.27832,"lng":-75.56941,"interchange":true},
+    {"id":"cordoba","name":"Córdoba","line":"Línea O","lat":6.284,"lng":-75.5635,"interchange":false},
+    {"id":"pilarica","name":"Pilarica","line":"Línea O","lat":6.277,"lng":-75.5725,"interchange":false},
+    {"id":"ciudadela-universitaria","name":"Ciudadela Universitaria","line":"Línea O","lat":6.2705,"lng":-75.579,"interchange":false},
+    {"id":"facultad-de-minas","name":"Facultad de Minas","line":"Línea O","lat":6.264,"lng":-75.5835,"interchange":false},
+    {"id":"los-colores","name":"Los Colores","line":"Línea O","lat":6.257,"lng":-75.589,"interchange":false},
+    {"id":"calasanz","name":"Calasanz","line":"Línea O","lat":6.2515,"lng":-75.5935,"interchange":false},
+    {"id":"integracion-floresta","name":"Integración Floresta","line":"Línea O","lat":6.248,"lng":-75.599,"interchange":true},
+    {"id":"los-pinos","name":"Los Pinos","line":"Línea O","lat":6.244,"lng":-75.6045,"interchange":false},
+    {"id":"santa-lucia","name":"Santa Lucía","line":"Línea O","lat":6.25808,"lng":-75.60375,"interchange":true},
+    {"id":"la-palma","name":"La Palma","line":"Línea O","lat":6.23114,"lng":-75.60102,"interchange":false},
+    {"id":"u-de-m","name":"U. de M.","line":"Línea 1","lat":6.23076,"lng":-75.60902,"interchange":true},
+    {"id":"integracion","name":"Integración","line":"Línea 1","lat":6.25221,"lng":-75.56851,"interchange":false},
+    {"id":"chagualo","name":"Chagualo","line":"Línea 1","lat":6.26073,"lng":-75.56915,"interchange":false},
+    {"id":"ruta-n-u-de-a","name":"Ruta N · U. de A.","line":"Línea 1","lat":6.27,"lng":-75.5655,"interchange":false},
+    {"id":"universal","name":"Universal","line":"Línea 1","lat":6.281,"lng":-75.5638,"interchange":false},
+    {"id":"parque-aranjuez","name":"Parque Aranjuez","line":"Línea 1","lat":6.28521,"lng":-75.55661,"interchange":true},
+    {"id":"u-de-m","name":"U. de M.","line":"Línea 2","lat":6.23076,"lng":-75.60902,"interchange":true},
+    {"id":"san-jose","name":"San José","line":"Línea 2","lat":6.24711,"lng":-75.56614,"interchange":false},
+    {"id":"la-playa","name":"La Playa","line":"Línea 2","lat":6.24956,"lng":-75.56449,"interchange":false},
+    {"id":"catedral","name":"Catedral","line":"Línea 2","lat":6.25289,"lng":-75.56256,"interchange":false},
+    {"id":"minorista","name":"Minorista","line":"Línea 2","lat":6.25613,"lng":-75.57317,"interchange":false},
+    {"id":"berlin","name":"Berlín","line":"Línea 2","lat":6.28288,"lng":-75.55291,"interchange":false},
+    {"id":"las-esmeraldas","name":"Las Esmeraldas","line":"Línea 2","lat":6.27837,"lng":-75.55315,"interchange":false},
+    {"id":"manrique","name":"Manrique","line":"Línea 2","lat":6.27324,"lng":-75.55405,"interchange":false},
+    {"id":"gardel","name":"Gardel","line":"Línea 2","lat":6.26767,"lng":-75.55501,"interchange":false},
+    {"id":"palos-verdes","name":"Palos Verdes","line":"Línea 2","lat":6.26205,"lng":-75.55589,"interchange":false},
+    {"id":"parque-aranjuez","name":"Parque Aranjuez","line":"Línea 2","lat":6.28521,"lng":-75.55661,"interchange":true}
 ];
+/* DB:END */
 
 // ── ROUTE PATHS (fallback – overwritten by OSM data) ─────────────────────────
 const ROUTES = {};
@@ -699,7 +1197,7 @@ function showLoader(msg) {
     el = document.createElement('div');
     el.id = 'osm-loader';
     el.style.cssText = `
-      position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+      position:fixed;bottom:calc(16px + var(--safe-bottom));left:50%;transform:translateX(-50%);
       z-index:2000;background:rgba(10,14,26,0.95);backdrop-filter:blur(12px);
       border:1px solid #1e2d45;border-radius:10px;padding:10px 18px;
       font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#e8edf5;
@@ -1107,6 +1605,20 @@ function showInfoCard(s) {
   const dist = userPos ? formatDist(calcDist(userPos.lat, userPos.lng, s.lat, s.lng)) : null;
   const biciTag = lineData.bici ? '✓ Permitida' : '✗ Solo plegables';
 
+  // Ficha completa de la estación física (una sola por nombre, aunque la sirvan
+  // varias líneas). s.id lo genera scripts/build-data.mjs.
+  const est = DB.estacionPorId[s.id];
+  const transferencia = est?.transferencia || null;
+
+  // Otras líneas disponibles aquí, incluidas las de estaciones co-ubicadas
+  // (p. ej. Alpujarra ↔ U. de M.), que es donde el usuario puede transbordar.
+  const otrasLineas = est
+    ? [
+        ...est.lineas.filter(l => l !== s.line),
+        ...est.colocadaCon.flatMap(id => DB.estacionPorId[id]?.lineas ?? []),
+      ].filter((l, i, a) => a.indexOf(l) === i)
+    : [];
+
   // Store current station for goToStation
   window._currentCardStation = s;
 
@@ -1142,11 +1654,64 @@ function showInfoCard(s) {
       <div class="info-stat-value small">${biciTag}</div>
     </div>
     <div class="info-stat">
-      <div class="info-stat-label">Tipo</div>
-      <div class="info-stat-value small">${s.interchange ? '🔀 Transferencia' : 'Estación regular'}</div>
-    </div>`;
+      <div class="info-stat-label">${otrasLineas.length ? 'Transbordo a' : 'Municipio'}</div>
+      <div class="info-stat-value small">${otrasLineas.length ? otrasLineas.join(' · ') : (est?.municipio || '—')}</div>
+    </div>
+    ${transferencia ? `
+    <div class="info-stat full">
+      <div class="info-stat-label">Transferencia ${transferencia.tipo}</div>
+      <div class="info-stat-value small">${transferencia.nota || (transferencia.tipo === 'peatonal' ? 'Requiere salir y caminar' : 'Dentro de la estación')}</div>
+    </div>` : ''}`;
 
+  document.getElementById('info-card-services').innerHTML =
+    (est && !est.verificado
+      ? '<div class="svc-aprox">📍 <span><b>Ubicación aproximada.</b> Si conoces la posición exacta, ' +
+        'usa «¿Ubicación incorrecta?» aquí abajo.</span></div>'
+      : '') + renderServicios(est);
   document.getElementById('info-card').classList.add('visible');
+}
+
+// ── SERVICIOS DE LA ESTACIÓN ─────────────────────────────────────────────────
+// Convención de DB.estaciones[].servicios (ver data/README.md):
+//   true  → confirmado que la estación lo tiene
+//   false → confirmado que NO lo tiene
+//   ausente/null → sin verificar. No se muestra: no se afirma lo que no se sabe.
+function renderServicios(est) {
+  if (!est) return '';
+
+  const declarados = Object.entries(est.servicios || {})
+    .filter(([clave, valor]) => DB.catalogo.servicios[clave] && valor !== null);
+
+  if (!declarados.length) {
+    return `<div class="svc-empty">
+      <strong>Servicios sin verificar.</strong> Todavía no hay información
+      confirmada sobre los servicios de esta estación.
+    </div>`;
+  }
+
+  // Agrupa por categoría respetando el orden del catálogo.
+  const grupos = new Map();
+  for (const [clave, valor] of declarados) {
+    const def = DB.catalogo.servicios[clave];
+    if (!grupos.has(def.categoria)) grupos.set(def.categoria, []);
+    grupos.get(def.categoria).push({ ...def, disponible: valor === true });
+  }
+
+  const ordenadas = [...grupos.entries()]
+    .map(([clave, servicios]) => ({ ...DB.catalogo.categorias[clave], servicios }))
+    .sort((a, b) => a.orden - b.orden);
+
+  return ordenadas.map(cat => `
+    <div class="svc-group">
+      <div class="svc-group-title">${cat.icono} ${cat.etiqueta}</div>
+      <div class="svc-chips">
+        ${cat.servicios
+          .sort((a, b) => Number(b.disponible) - Number(a.disponible))
+          .map(s => `<span class="svc-chip${s.disponible ? '' : ' svc-no'}" title="${s.descripcion}">
+            <span class="svc-icon">${s.icono}</span>${s.etiqueta}
+          </span>`).join('')}
+      </div>
+    </div>`).join('');
 }
 
 let _goStation = null;
@@ -1171,6 +1736,7 @@ let _correctionStation = null;
 let _correctionCoords  = null;
 let _correctionMarker  = null;
 let _pickingOnMap      = false;
+let _correctionMetodo  = null;   // 'gps' | 'mapa', para saber de dónde salió
 
 function openCorrectionPanel() {
   const s = window._currentCardStation;
@@ -1224,6 +1790,7 @@ function useGPSForCorrection() {
   navigator.geolocation.getCurrentPosition(
     pos => {
       const { latitude: lat, longitude: lng } = pos.coords;
+      _correctionMetodo = 'gps';
       _setTempMarker(lat, lng);
       _showCoords(lat, lng);
       map.flyTo([lat, lng], 17, { duration: 1 });
@@ -1247,6 +1814,7 @@ function _onMapPick(e) {
   document.getElementById('correction-overlay').classList.add('visible');
 
   const { lat, lng } = e.latlng;
+  _correctionMetodo = 'mapa';
   _setTempMarker(lat, lng);
   _showCoords(lat, lng);
 }
@@ -1274,6 +1842,9 @@ function saveCorrection() {
       st.lat = lat; st.lng = lng; count++;
     }
   });
+  // Mantener DB coherente con STATIONS: la ficha de estación lee de DB.
+  const est = DB.estacionPorId[s.id];
+  if (est) { est.coordenadas.lat = lat; est.coordenadas.lng = lng; }
 
   // Persist in localStorage
   try {
@@ -1291,12 +1862,43 @@ function saveCorrection() {
   // Remove temp marker
   if (_correctionMarker) { map.removeLayer(_correctionMarker); _correctionMarker = null; }
 
+  // Enviar la propuesta al servidor. Sin await: si falla la red, la
+  // corrección ya quedó guardada en local y el usuario no debe esperar.
+  enviarCorreccion(s, lat, lng);
+
   cancelCorrection();
   map.flyTo([lat, lng], 17, { duration: 1.2 });
   showToast(`✅ Corrección guardada para ${s.name} (${s.line})`);
 }
 
 // Load any saved corrections on startup
+// Envía la corrección a Supabase para que llegue a quien mantiene los datos.
+// Antes solo se guardaba en localStorage: mejoraba la app de esa persona y no
+// se enteraba nadie más. La clave anon solo puede INSERTAR aquí; las
+// coordenadas oficiales no se tocan hasta que alguien revisa la propuesta.
+function enviarCorreccion(estacion, lat, lng) {
+  const cfg = DB.supabase;
+  if (!cfg?.url || !cfg?.clave) return;   // build sin .env: solo local
+
+  fetch(cfg.url + '/rest/v1/MetroMed_correcciones', {
+    method: 'POST',
+    headers: {
+      apikey: cfg.clave,
+      Authorization: 'Bearer ' + cfg.clave,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal',
+    },
+    body: JSON.stringify({
+      estacion_id: estacion.id,
+      lat, lng,
+      metodo: _correctionMetodo,
+    }),
+  }).catch(() => {
+    // Silencio deliberado: el usuario ya vio "corrección guardada" y para él
+    // está resuelto. Reintentar o alarmarlo no aporta nada.
+  });
+}
+
 function loadSavedCorrections() {
   try {
     for (let i = 0; i < localStorage.length; i++) {
@@ -1305,7 +1907,11 @@ function loadSavedCorrections() {
       const [name, line] = key.replace('correction:','').split('|');
       const { lat, lng } = JSON.parse(localStorage.getItem(key));
       STATIONS.forEach(st => {
-        if (st.name === name && st.line === line) { st.lat = lat; st.lng = lng; }
+        if (st.name === name && st.line === line) {
+          st.lat = lat; st.lng = lng;
+          const est = DB.estacionPorId[st.id];
+          if (est) { est.coordenadas.lat = lat; est.coordenadas.lng = lng; }
+        }
       });
     }
   } catch(e) {}

@@ -1,0 +1,366 @@
+{
+  "version": 1,
+  "lineas": [
+    {
+      "id": "A",
+      "nombre": "Línea A",
+      "color": "#1e4fa0",
+      "tipo": "metro",
+      "tramo": "Niquía ↔ La Estrella",
+      "estado": "operativa",
+      "bicicletaPermitida": true,
+      "tarifa": "integrada",
+      "horario": {
+        "nota": null,
+        "noOpera": [],
+        "lunesASabado": {
+          "cierre": "23:00",
+          "apertura": "04:30"
+        },
+        "domingosYFestivos": {
+          "cierre": "22:00",
+          "apertura": "05:00"
+        }
+      },
+      "estaciones": [
+        "niquia",
+        "bello",
+        "madera",
+        "acevedo",
+        "tricentenario",
+        "caribe",
+        "universidad",
+        "hospital",
+        "prado",
+        "parque-berrio",
+        "san-antonio",
+        "alpujarra",
+        "exposiciones",
+        "industriales",
+        "poblado",
+        "aguacatala",
+        "ayura",
+        "envigado",
+        "itagui",
+        "sabaneta",
+        "la-estrella"
+      ]
+    },
+    {
+      "id": "B",
+      "nombre": "Línea B",
+      "color": "#f07830",
+      "tipo": "metro",
+      "tramo": "San Antonio ↔ San Javier",
+      "estado": "operativa",
+      "bicicletaPermitida": true,
+      "tarifa": "integrada",
+      "horario": {
+        "nota": null,
+        "noOpera": [],
+        "lunesASabado": {
+          "cierre": "23:00",
+          "apertura": "04:30"
+        },
+        "domingosYFestivos": {
+          "cierre": "22:00",
+          "apertura": "05:00"
+        }
+      },
+      "estaciones": [
+        "san-antonio",
+        "cisneros",
+        "suramericana",
+        "estadio",
+        "floresta",
+        "santa-lucia",
+        "san-javier"
+      ]
+    },
+    {
+      "id": "H",
+      "nombre": "Línea H",
+      "color": "#c8387a",
+      "tipo": "cable",
+      "tramo": "Oriente ↔ Villa Sierra",
+      "estado": "operativa",
+      "bicicletaPermitida": true,
+      "tarifa": "integrada",
+      "horario": {
+        "nota": null,
+        "noOpera": [],
+        "lunesASabado": {
+          "cierre": "23:00",
+          "apertura": "04:30"
+        },
+        "domingosYFestivos": {
+          "cierre": "22:00",
+          "apertura": "09:00"
+        }
+      },
+      "estaciones": [
+        "oriente",
+        "las-torres",
+        "villa-sierra"
+      ]
+    },
+    {
+      "id": "J",
+      "nombre": "Línea J",
+      "color": "#c8a020",
+      "tipo": "cable",
+      "tramo": "San Javier ↔ La Aurora",
+      "estado": "operativa",
+      "bicicletaPermitida": true,
+      "tarifa": "integrada",
+      "horario": {
+        "nota": null,
+        "noOpera": [],
+        "lunesASabado": {
+          "cierre": "23:00",
+          "apertura": "04:30"
+        },
+        "domingosYFestivos": {
+          "cierre": "22:00",
+          "apertura": "09:00"
+        }
+      },
+      "estaciones": [
+        "san-javier",
+        "juan-xxiii",
+        "vallejuelos",
+        "la-aurora"
+      ]
+    },
+    {
+      "id": "K",
+      "nombre": "Línea K",
+      "color": "#5aaa28",
+      "tipo": "cable",
+      "tramo": "Acevedo ↔ Santo Domingo",
+      "estado": "operativa",
+      "bicicletaPermitida": true,
+      "tarifa": "integrada",
+      "horario": {
+        "nota": null,
+        "noOpera": [],
+        "lunesASabado": {
+          "cierre": "23:00",
+          "apertura": "04:30"
+        },
+        "domingosYFestivos": {
+          "cierre": "22:00",
+          "apertura": "08:30"
+        }
+      },
+      "estaciones": [
+        "acevedo",
+        "andalucia",
+        "popular",
+        "santo-domingo"
+      ]
+    },
+    {
+      "id": "L",
+      "nombre": "Línea L",
+      "color": "#8a7828",
+      "tipo": "cable",
+      "tramo": "Santo Domingo ↔ Arví",
+      "estado": "operativa",
+      "bicicletaPermitida": false,
+      "tarifa": "especial",
+      "horario": {
+        "nota": "Servicio turístico al Parque Arví.",
+        "noOpera": [
+          "martes"
+        ],
+        "lunesASabado": {
+          "cierre": "18:00",
+          "apertura": "09:00"
+        },
+        "domingosYFestivos": {
+          "cierre": "18:00",
+          "apertura": "08:30"
+        }
+      },
+      "estaciones": [
+        "santo-domingo",
+        "arvi"
+      ]
+    },
+    {
+      "id": "M",
+      "nombre": "Línea M",
+      "color": "#282870",
+      "tipo": "cable",
+      "tramo": "Miraflores ↔ Trece de Noviembre",
+      "estado": "operativa",
+      "bicicletaPermitida": true,
+      "tarifa": "integrada",
+      "horario": {
+        "nota": null,
+        "noOpera": [],
+        "lunesASabado": {
+          "cierre": "23:00",
+          "apertura": "04:30"
+        },
+        "domingosYFestivos": {
+          "cierre": "22:00",
+          "apertura": "09:00"
+        }
+      },
+      "estaciones": [
+        "miraflores",
+        "el-pinal",
+        "trece-de-noviembre"
+      ]
+    },
+    {
+      "id": "P",
+      "nombre": "Línea P",
+      "color": "#d01818",
+      "tipo": "cable",
+      "tramo": "Acevedo ↔ El Progreso",
+      "estado": "en construcción",
+      "bicicletaPermitida": false,
+      "tarifa": "integrada",
+      "horario": null,
+      "estaciones": [
+        "acevedo",
+        "doce-de-octubre",
+        "el-progreso"
+      ]
+    },
+    {
+      "id": "T",
+      "nombre": "Línea T",
+      "color": "#1e8040",
+      "tipo": "tranvia",
+      "tramo": "San Antonio ↔ Oriente",
+      "estado": "operativa",
+      "bicicletaPermitida": false,
+      "tarifa": "integrada",
+      "horario": {
+        "nota": null,
+        "noOpera": [],
+        "lunesASabado": {
+          "cierre": "23:00",
+          "apertura": "04:30"
+        },
+        "domingosYFestivos": {
+          "cierre": "22:00",
+          "apertura": "05:00"
+        }
+      },
+      "estaciones": [
+        "san-antonio",
+        "bicentenario",
+        "buenos-aires",
+        "miraflores",
+        "loyola",
+        "alejandro-echavarria",
+        "oriente"
+      ]
+    },
+    {
+      "id": "O",
+      "nombre": "Línea O",
+      "color": "#28b4d0",
+      "tipo": "tranvia",
+      "tramo": "Caribe ↔ La Palma (Av. 80)",
+      "estado": "operativa",
+      "bicicletaPermitida": false,
+      "tarifa": "integrada",
+      "horario": {
+        "nota": null,
+        "noOpera": [],
+        "lunesASabado": {
+          "cierre": "23:00",
+          "apertura": "04:30"
+        },
+        "domingosYFestivos": {
+          "cierre": "22:00",
+          "apertura": "05:00"
+        }
+      },
+      "estaciones": [
+        "caribe",
+        "cordoba",
+        "pilarica",
+        "ciudadela-universitaria",
+        "facultad-de-minas",
+        "los-colores",
+        "calasanz",
+        "integracion-floresta",
+        "los-pinos",
+        "santa-lucia",
+        "la-palma"
+      ]
+    },
+    {
+      "id": "1",
+      "nombre": "Línea 1",
+      "color": "#287888",
+      "tipo": "bus",
+      "tramo": "U. de M. ↔ Parque Aranjuez (Av. del Ferrocarril)",
+      "estado": "operativa",
+      "bicicletaPermitida": false,
+      "tarifa": "integrada",
+      "horario": {
+        "nota": null,
+        "noOpera": [],
+        "lunesASabado": {
+          "cierre": "23:00",
+          "apertura": "04:30"
+        },
+        "domingosYFestivos": {
+          "cierre": "22:00",
+          "apertura": "05:00"
+        }
+      },
+      "estaciones": [
+        "u-de-m",
+        "integracion",
+        "chagualo",
+        "ruta-n-u-de-a",
+        "universal",
+        "parque-aranjuez"
+      ]
+    },
+    {
+      "id": "2",
+      "nombre": "Línea 2",
+      "color": "#50c0c0",
+      "tipo": "bus",
+      "tramo": "U. de M. ↔ Parque Aranjuez (Av. Oriental)",
+      "estado": "operativa",
+      "bicicletaPermitida": false,
+      "tarifa": "integrada",
+      "horario": {
+        "nota": null,
+        "noOpera": [],
+        "lunesASabado": {
+          "cierre": "23:00",
+          "apertura": "04:30"
+        },
+        "domingosYFestivos": {
+          "cierre": "22:00",
+          "apertura": "05:00"
+        }
+      },
+      "estaciones": [
+        "u-de-m",
+        "san-jose",
+        "la-playa",
+        "catedral",
+        "minorista",
+        "berlin",
+        "las-esmeraldas",
+        "manrique",
+        "gardel",
+        "palos-verdes",
+        "parque-aranjuez"
+      ]
+    }
+  ]
+}

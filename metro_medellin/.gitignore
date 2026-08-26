@@ -1,0 +1,51 @@
+# Dependencias
+node_modules/
+
+# Build web que consume Capacitor (se regenera con `npm run build`)
+www/
+
+# ── Android ──────────────────────────────────────────────────────────────────
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/captures/
+android/.idea/
+android/app/release/
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+
+# Claves de firma: NUNCA se suben al repositorio
+*.jks
+*.keystore
+keystore.properties
+
+# ── iOS ──────────────────────────────────────────────────────────────────────
+ios/App/App/public/
+ios/App/App/capacitor.config.json
+ios/App/Pods/
+ios/App/Podfile.lock
+ios/App/output/
+ios/App/build/
+ios/DerivedData/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+
+# ── Sistema / editores ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+
+# ── Supabase ─────────────────────────────────────────────────────────────────
+# Credenciales del proyecto: nunca al repositorio
+.env
+.env.local
+supabase/.branches/
+supabase/.temp/
+
+# ── PWA ──────────────────────────────────────────────────────────────────────
+# dist/ se regenera con `npm run pwa`. vendor/ SÍ se versiona: así un clon
+# puede construir sin acceso a los CDN.
+dist/

@@ -1,0 +1,225 @@
+{
+  "version": 1,
+  "_comentario": "Taxonomía de servicios de estación. Las claves de 'servicios' en stations.json deben existir aquí; scripts/validate-data.mjs rechaza las que no. Ver data/README.md para la convención true/false/null.",
+  "categorias": {
+    "accesibilidad": {
+      "etiqueta": "Accesibilidad",
+      "icono": "♿",
+      "orden": 1
+    },
+    "atencion": {
+      "etiqueta": "Atención al usuario",
+      "icono": "🎫",
+      "orden": 2
+    },
+    "comercioYCultura": {
+      "etiqueta": "Comercio y cultura",
+      "icono": "🛍️",
+      "orden": 5
+    },
+    "comodidad": {
+      "etiqueta": "Comodidades",
+      "icono": "🚻",
+      "orden": 3
+    },
+    "movilidad": {
+      "etiqueta": "Movilidad e integración",
+      "icono": "🚲",
+      "orden": 4
+    }
+  },
+  "servicios": {
+    "accesoSillaRuedas": {
+      "etiqueta": "Acceso en silla de ruedas",
+      "icono": "♿",
+      "categoria": "accesibilidad",
+      "descripcion": "Recorrido completo de calle a tren sin escalones."
+    },
+    "anuncioSonoro": {
+      "etiqueta": "Anuncios sonoros",
+      "icono": "🔊",
+      "categoria": "accesibilidad",
+      "descripcion": "Información de llegada y destino por audio."
+    },
+    "ascensor": {
+      "etiqueta": "Ascensor",
+      "icono": "🛗",
+      "categoria": "accesibilidad",
+      "descripcion": "Ascensor para acceder a la plataforma."
+    },
+    "banoAccesible": {
+      "etiqueta": "Baño accesible",
+      "icono": "🚾",
+      "categoria": "accesibilidad",
+      "descripcion": "Baño adaptado para personas con movilidad reducida."
+    },
+    "banos": {
+      "etiqueta": "Baños",
+      "icono": "🚻",
+      "categoria": "comodidad",
+      "descripcion": "Servicios sanitarios para usuarios."
+    },
+    "bebedero": {
+      "etiqueta": "Bebedero",
+      "icono": "🚰",
+      "categoria": "comodidad",
+      "descripcion": "Punto de agua potable."
+    },
+    "bibliometro": {
+      "etiqueta": "Bibliometro",
+      "icono": "📚",
+      "categoria": "comercioYCultura",
+      "descripcion": "Punto de préstamo de libros del Metro."
+    },
+    "cajeroAutomatico": {
+      "etiqueta": "Cajero automático",
+      "icono": "🏦",
+      "categoria": "comodidad",
+      "descripcion": "Cajero bancario dentro de la estación."
+    },
+    "casilleros": {
+      "etiqueta": "Casilleros",
+      "icono": "🔐",
+      "categoria": "comodidad",
+      "descripcion": "Lockers para guardar pertenencias."
+    },
+    "comercio": {
+      "etiqueta": "Comercio",
+      "icono": "🛍️",
+      "categoria": "comercioYCultura",
+      "descripcion": "Locales comerciales dentro de la estación."
+    },
+    "culturaMetro": {
+      "etiqueta": "Cultura Metro",
+      "icono": "🎨",
+      "categoria": "comercioYCultura",
+      "descripcion": "Obra de arte, mural o espacio de exposición."
+    },
+    "encicla": {
+      "etiqueta": "EnCicla",
+      "icono": "🚴",
+      "categoria": "movilidad",
+      "descripcion": "Estación del sistema de bicicletas públicas del AMVA."
+    },
+    "escaleraElectrica": {
+      "etiqueta": "Escalera eléctrica",
+      "icono": "🪜",
+      "categoria": "accesibilidad",
+      "descripcion": "Escaleras eléctricas entre el nivel de calle y la plataforma."
+    },
+    "objetosPerdidos": {
+      "etiqueta": "Objetos perdidos",
+      "icono": "🧳",
+      "categoria": "atencion",
+      "descripcion": "Punto de recepción y entrega de objetos olvidados."
+    },
+    "parqueaderoBicicletas": {
+      "etiqueta": "Cicloparqueadero",
+      "icono": "🚲",
+      "categoria": "movilidad",
+      "descripcion": "Parqueadero de bicicletas para usuarios."
+    },
+    "parqueaderoVehiculos": {
+      "etiqueta": "Parqueadero de vehículos",
+      "icono": "🅿️",
+      "categoria": "movilidad",
+      "descripcion": "Parqueadero de carros o motos asociado a la estación."
+    },
+    "pisoPodotactil": {
+      "etiqueta": "Piso podotáctil",
+      "icono": "⠿",
+      "categoria": "accesibilidad",
+      "descripcion": "Guía táctil en el piso para personas con discapacidad visual."
+    },
+    "primerosAuxilios": {
+      "etiqueta": "Primeros auxilios",
+      "icono": "🚑",
+      "categoria": "atencion",
+      "descripcion": "Puesto de atención en salud."
+    },
+    "puntoAtencionCliente": {
+      "etiqueta": "PAC",
+      "icono": "🛎️",
+      "categoria": "atencion",
+      "descripcion": "Punto de Atención al Cliente: trámites de Cívica, PQRS y atención presencial."
+    },
+    "puntoCivica": {
+      "etiqueta": "Punto Cívica",
+      "icono": "💳",
+      "categoria": "atencion",
+      "descripcion": "Expedición y personalización de la tarjeta Cívica."
+    },
+    "puntoInformacion": {
+      "etiqueta": "Punto de información",
+      "icono": "ℹ️",
+      "categoria": "atencion",
+      "descripcion": "Orientación de viaje. Más básico que un PAC; una estación puede tener uno sin el otro."
+    },
+    "rampaAcceso": {
+      "etiqueta": "Rampa de acceso",
+      "icono": "📐",
+      "categoria": "accesibilidad",
+      "descripcion": "Rampa de pendiente accesible desde la calle."
+    },
+    "recargaAutomatica": {
+      "etiqueta": "Recarga automática",
+      "icono": "🏧",
+      "categoria": "atencion",
+      "descripcion": "Máquina de autorrecarga de la tarjeta Cívica."
+    },
+    "rutasAlimentadoras": {
+      "etiqueta": "Rutas alimentadoras",
+      "icono": "🚌",
+      "categoria": "movilidad",
+      "descripcion": "Buses alimentadores integrados con la tarifa del sistema."
+    },
+    "rutasIntegradas": {
+      "etiqueta": "Rutas integradas",
+      "icono": "🔀",
+      "categoria": "movilidad",
+      "descripcion": "Rutas de bus con integración tarifaria en la estación."
+    },
+    "senalizacionBraille": {
+      "etiqueta": "Señalización en braille",
+      "icono": "⠃",
+      "categoria": "accesibilidad",
+      "descripcion": "Información en braille en accesos, ascensores o barandas."
+    },
+    "taquilla": {
+      "etiqueta": "Taquilla",
+      "icono": "🎫",
+      "categoria": "atencion",
+      "descripcion": "Venta y recarga de tiquetes con personal."
+    },
+    "torniqueteAccesible": {
+      "etiqueta": "Torniquete amplio",
+      "icono": "🚪",
+      "categoria": "accesibilidad",
+      "descripcion": "Paso ancho para sillas de ruedas, coches o equipaje."
+    },
+    "vending": {
+      "etiqueta": "Máquinas dispensadoras",
+      "icono": "🥤",
+      "categoria": "comercioYCultura",
+      "descripcion": "Vending de alimentos o bebidas."
+    },
+    "wifi": {
+      "etiqueta": "WiFi",
+      "icono": "📶",
+      "categoria": "comodidad",
+      "descripcion": "Red inalámbrica pública en la estación."
+    },
+    "zonaEspera": {
+      "etiqueta": "Zona de espera",
+      "icono": "🪑",
+      "categoria": "comodidad",
+      "descripcion": "Sillas o área cubierta de espera."
+    },
+    "zonaTaxis": {
+      "etiqueta": "Zona de taxis",
+      "icono": "🚕",
+      "categoria": "movilidad",
+      "descripcion": "Bahía de taxis en el acceso."
+    }
+  }
+}

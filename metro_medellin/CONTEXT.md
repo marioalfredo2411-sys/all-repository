@@ -33,15 +33,23 @@ Desarrollado iterativamente en conversación con Claude (Anthropic).
 
 ## 3. Archivos del proyecto
 
+> **Actualizado:** el proyecto pasó a tener apps nativas (Capacitor) y una base
+> de datos en `data/`. Ver [README.md](README.md) para el build y
+> [data/README.md](data/README.md) para el modelo de datos. Las secciones 4, 5,
+> 10 y 11 de este documento ahora viven en `data/*.json`; lo de aquí es la
+> referencia narrativa.
+
 ```
 metro-medellin/
-├── index.html          ← app completa (single file)
+├── index.html          ← app completa (bloque de datos generado desde data/)
+├── data/               ← BD: lines, stations, services, fares
+├── src/  scripts/      ← capa nativa y herramientas de build
+├── android/  ios/      ← proyectos nativos (Capacitor)
 ├── manifest.json       ← PWA manifest con id, icons, screenshots
 ├── sw.js               ← Service Worker para offline
 ├── icon-192.png        ← ícono PWA 192×192
 ├── icon-512.png        ← ícono PWA 512×512
-├── screenshot1.png     ← captura para PWABuilder/stores
-└── screenshot2.png     ← captura para PWABuilder/stores
+└── MetroMed01/02.png   ← capturas para las tiendas
 ```
 
 ---

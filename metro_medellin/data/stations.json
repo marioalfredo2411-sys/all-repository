@@ -1,0 +1,1447 @@
+{
+  "version": 1,
+  "estaciones": [
+    {
+      "id": "acevedo",
+      "nombre": "Acevedo",
+      "coordenadas": {
+        "lat": 6.2999,
+        "lng": -75.55865
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Acevedo), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "aguacatala",
+      "nombre": "Aguacatala",
+      "coordenadas": {
+        "lat": 6.194,
+        "lng": -75.58178
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": true,
+      "servicios": {
+        "parqueaderoBicicletas": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Aguacatala), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "alejandro-echavarria",
+      "nombre": "Alejandro Echavarría",
+      "coordenadas": {
+        "lat": 6.2366,
+        "lng": -75.5428
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "alpujarra",
+      "nombre": "Alpujarra",
+      "coordenadas": {
+        "lat": 6.24293,
+        "lng": -75.57142
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Alpujarra), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "andalucia",
+      "nombre": "Andalucía",
+      "coordenadas": {
+        "lat": 6.29633,
+        "lng": -75.55187
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "parqueaderoBicicletas": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Andalucía), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "arvi",
+      "nombre": "Arví",
+      "coordenadas": {
+        "lat": 6.28134,
+        "lng": -75.50301
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "parqueaderoBicicletas": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Arví), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "ayura",
+      "nombre": "Ayurá",
+      "coordenadas": {
+        "lat": 6.18616,
+        "lng": -75.58606
+      },
+      "municipio": "Envigado",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Estación del Metro Ayurá), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "bello",
+      "nombre": "Bello",
+      "coordenadas": {
+        "lat": 6.33009,
+        "lng": -75.55364
+      },
+      "municipio": "Bello",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Bello), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "berlin",
+      "nombre": "Berlín",
+      "coordenadas": {
+        "lat": 6.28288,
+        "lng": -75.55291
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Berlín), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "bicentenario",
+      "nombre": "Bicentenario",
+      "coordenadas": {
+        "lat": 6.2453,
+        "lng": -75.56375
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "buenos-aires",
+      "nombre": "Buenos Aires",
+      "coordenadas": {
+        "lat": 6.244,
+        "lng": -75.557
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "calasanz",
+      "nombre": "Calasanz",
+      "coordenadas": {
+        "lat": 6.2515,
+        "lng": -75.5935
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "caribe",
+      "nombre": "Caribe",
+      "coordenadas": {
+        "lat": 6.27832,
+        "lng": -75.56941
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Caribe), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "catedral",
+      "nombre": "Catedral",
+      "coordenadas": {
+        "lat": 6.25289,
+        "lng": -75.56256
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Catedral), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "chagualo",
+      "nombre": "Chagualo",
+      "coordenadas": {
+        "lat": 6.26073,
+        "lng": -75.56915
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Chagualo), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "cisneros",
+      "nombre": "Cisneros",
+      "coordenadas": {
+        "lat": 6.24903,
+        "lng": -75.57511
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Cisneros), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "ciudadela-universitaria",
+      "nombre": "Ciudadela Universitaria",
+      "coordenadas": {
+        "lat": 6.2705,
+        "lng": -75.579
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "cordoba",
+      "nombre": "Córdoba",
+      "coordenadas": {
+        "lat": 6.284,
+        "lng": -75.5635
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "doce-de-octubre",
+      "nombre": "Doce de Octubre",
+      "coordenadas": {
+        "lat": 6.30424,
+        "lng": -75.57604
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Doce de Octubre), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "el-pinal",
+      "nombre": "El Pinal",
+      "coordenadas": {
+        "lat": 6.24529,
+        "lng": -75.54455
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (El Pinal), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "el-progreso",
+      "nombre": "El Progreso",
+      "coordenadas": {
+        "lat": 6.30598,
+        "lng": -75.58222
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (El Progreso), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "envigado",
+      "nombre": "Envigado",
+      "coordenadas": {
+        "lat": 6.17472,
+        "lng": -75.59706
+      },
+      "municipio": "Envigado",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Estación del Metro Envigado), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "estadio",
+      "nombre": "Estadio",
+      "coordenadas": {
+        "lat": 6.25335,
+        "lng": -75.58823
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true,
+        "parqueaderoBicicletas": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Estadio), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "exposiciones",
+      "nombre": "Exposiciones",
+      "coordenadas": {
+        "lat": 6.23842,
+        "lng": -75.57317
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Exposiciones), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "facultad-de-minas",
+      "nombre": "Facultad de Minas",
+      "coordenadas": {
+        "lat": 6.264,
+        "lng": -75.5835
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "floresta",
+      "nombre": "Floresta",
+      "coordenadas": {
+        "lat": 6.2587,
+        "lng": -75.59774
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Floresta), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "gardel",
+      "nombre": "Gardel",
+      "coordenadas": {
+        "lat": 6.26767,
+        "lng": -75.55501
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Gardel), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "hospital",
+      "nombre": "Hospital",
+      "coordenadas": {
+        "lat": 6.26388,
+        "lng": -75.56337
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Hospital), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "industriales",
+      "nombre": "Industriales",
+      "coordenadas": {
+        "lat": 6.23004,
+        "lng": -75.57563
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true,
+        "parqueaderoBicicletas": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Industriales), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "integracion",
+      "nombre": "Integración",
+      "coordenadas": {
+        "lat": 6.25221,
+        "lng": -75.56851
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "integracion-floresta",
+      "nombre": "Integración Floresta",
+      "coordenadas": {
+        "lat": 6.248,
+        "lng": -75.599
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": true,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": "integracionBuses heredado del dataset original de index.html; sin fuente documentada",
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "itagui",
+      "nombre": "Itagüí",
+      "coordenadas": {
+        "lat": 6.163,
+        "lng": -75.60659
+      },
+      "municipio": "Itagüí",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "parqueaderoBicicletas": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Estación del Metro Itagüí), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "juan-xxiii",
+      "nombre": "Juan XXIII",
+      "coordenadas": {
+        "lat": 6.26565,
+        "lng": -75.61369
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Juan XXIII), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "la-aurora",
+      "nombre": "La Aurora",
+      "coordenadas": {
+        "lat": 6.28113,
+        "lng": -75.61418
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (La Aurora), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "la-estrella",
+      "nombre": "La Estrella",
+      "coordenadas": {
+        "lat": 6.15278,
+        "lng": -75.62633
+      },
+      "municipio": "La Estrella",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Estación de Metro de la Estrella), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "la-palma",
+      "nombre": "La Palma",
+      "coordenadas": {
+        "lat": 6.23114,
+        "lng": -75.60102
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (La Palma), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "la-playa",
+      "nombre": "La Playa",
+      "coordenadas": {
+        "lat": 6.24956,
+        "lng": -75.56449
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (La Playa), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "las-esmeraldas",
+      "nombre": "Las Esmeraldas",
+      "coordenadas": {
+        "lat": 6.27837,
+        "lng": -75.55315
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Las Esmeraldas), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "las-torres",
+      "nombre": "Las Torres",
+      "coordenadas": {
+        "lat": 6.2366,
+        "lng": -75.53636
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": "En el dataset original figuraba como «Las Esperanzas»; OSM y el trazado de la línea confirman «Las Torres».",
+      "verificado": true,
+      "fuente": "OpenStreetMap (Las Torres), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "los-colores",
+      "nombre": "Los Colores",
+      "coordenadas": {
+        "lat": 6.257,
+        "lng": -75.589
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "los-pinos",
+      "nombre": "Los Pinos",
+      "coordenadas": {
+        "lat": 6.244,
+        "lng": -75.6045
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "loyola",
+      "nombre": "Loyola",
+      "coordenadas": {
+        "lat": 6.2386,
+        "lng": -75.5468
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "madera",
+      "nombre": "Madera",
+      "coordenadas": {
+        "lat": 6.31586,
+        "lng": -75.5553
+      },
+      "municipio": "Bello",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Madera), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "manrique",
+      "nombre": "Manrique",
+      "coordenadas": {
+        "lat": 6.27324,
+        "lng": -75.55405
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Manrique), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "minorista",
+      "nombre": "Minorista",
+      "coordenadas": {
+        "lat": 6.25613,
+        "lng": -75.57317
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Minorista), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "miraflores",
+      "nombre": "Miraflores",
+      "coordenadas": {
+        "lat": 6.24188,
+        "lng": -75.54921
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Miraflores), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "niquia",
+      "nombre": "Niquía",
+      "coordenadas": {
+        "lat": 6.33785,
+        "lng": -75.54426
+      },
+      "municipio": "Bello",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "parqueaderoBicicletas": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Niquía), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "oriente",
+      "nombre": "Oriente",
+      "coordenadas": {
+        "lat": 6.23329,
+        "lng": -75.54008
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Oriente), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "palos-verdes",
+      "nombre": "Palos Verdes",
+      "coordenadas": {
+        "lat": 6.26205,
+        "lng": -75.55589
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Palos Verdes), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "parque-aranjuez",
+      "nombre": "Parque Aranjuez",
+      "coordenadas": {
+        "lat": 6.28521,
+        "lng": -75.55661
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Parque de Aranjuez), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "parque-berrio",
+      "nombre": "Parque Berrío",
+      "coordenadas": {
+        "lat": 6.2505,
+        "lng": -75.56821
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Parque Berrío), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "pilarica",
+      "nombre": "Pilarica",
+      "coordenadas": {
+        "lat": 6.277,
+        "lng": -75.5725
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "poblado",
+      "nombre": "Poblado",
+      "coordenadas": {
+        "lat": 6.21198,
+        "lng": -75.57812
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Poblado), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "popular",
+      "nombre": "Popular",
+      "coordenadas": {
+        "lat": 6.29516,
+        "lng": -75.5481
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Popular), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "prado",
+      "nombre": "Prado",
+      "coordenadas": {
+        "lat": 6.25684,
+        "lng": -75.56616
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Prado), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "ruta-n-u-de-a",
+      "nombre": "Ruta N · U. de A.",
+      "coordenadas": {
+        "lat": 6.27,
+        "lng": -75.5655
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "sabaneta",
+      "nombre": "Sabaneta",
+      "coordenadas": {
+        "lat": 6.15774,
+        "lng": -75.61614
+      },
+      "municipio": "Sabaneta",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Sabaneta), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "san-antonio",
+      "nombre": "San Antonio",
+      "coordenadas": {
+        "lat": 6.24717,
+        "lng": -75.56968
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (San Antonio), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "san-javier",
+      "nombre": "San Javier",
+      "coordenadas": {
+        "lat": 6.25686,
+        "lng": -75.61382
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (San Javier), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "san-jose",
+      "nombre": "San José",
+      "coordenadas": {
+        "lat": 6.24711,
+        "lng": -75.56614
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (San José), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "santa-lucia",
+      "nombre": "Santa Lucía",
+      "coordenadas": {
+        "lat": 6.25808,
+        "lng": -75.60375
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Santa Lucía), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "santo-domingo",
+      "nombre": "Santo Domingo",
+      "coordenadas": {
+        "lat": 6.29296,
+        "lng": -75.54181
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Santo Domingo), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "suramericana",
+      "nombre": "Suramericana",
+      "coordenadas": {
+        "lat": 6.25297,
+        "lng": -75.58293
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true,
+        "parqueaderoBicicletas": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Suramericana), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "trece-de-noviembre",
+      "nombre": "Trece de Noviembre",
+      "coordenadas": {
+        "lat": 6.24766,
+        "lng": -75.54137
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Trece de Noviembre), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "tricentenario",
+      "nombre": "Tricentenario",
+      "coordenadas": {
+        "lat": 6.29031,
+        "lng": -75.56471
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Tricentenario), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "u-de-m",
+      "nombre": "U. de M.",
+      "coordenadas": {
+        "lat": 6.23076,
+        "lng": -75.60902
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "parqueaderoBicicletas": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Universidad de Medellín), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "universal",
+      "nombre": "Universal",
+      "coordenadas": {
+        "lat": 6.281,
+        "lng": -75.5638
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": false,
+      "fuente": null,
+      "actualizado": null,
+      "transferencia": null
+    },
+    {
+      "id": "universidad",
+      "nombre": "Universidad",
+      "coordenadas": {
+        "lat": 6.26941,
+        "lng": -75.5658
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {
+        "encicla": true,
+        "parqueaderoBicicletas": true
+      },
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Universidad), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "vallejuelos",
+      "nombre": "Vallejuelos",
+      "coordenadas": {
+        "lat": 6.2754,
+        "lng": -75.61394
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Vallejuelos), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    },
+    {
+      "id": "villa-sierra",
+      "nombre": "Villa Sierra",
+      "coordenadas": {
+        "lat": 6.23487,
+        "lng": -75.52871
+      },
+      "municipio": "Medellín",
+      "estructura": null,
+      "direccion": null,
+      "colocadaCon": [],
+      "integracionBuses": null,
+      "servicios": {},
+      "horarioEspecial": null,
+      "notas": null,
+      "verificado": true,
+      "fuente": "OpenStreetMap (Villa Sierra), 2026-08-12",
+      "actualizado": "2026-08-12",
+      "transferencia": null
+    }
+  ]
+}

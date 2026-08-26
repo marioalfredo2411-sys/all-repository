@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "vigencia": "2026",
+  "moneda": "COP",
+  "fuente": "https://www.metrodemedellin.gov.co/usuarios",
+  "actualizado": null,
+  "_comentario": "Las tarifas cambian cada año. Al actualizarlas, subir 'vigencia' y poner 'actualizado' en formato AAAA-MM-DD.",
+  "civica": [
+    {
+      "id": "frecuente",
+      "etiqueta": "Frecuente",
+      "integraciones1a4": 3820,
+      "integraciones5a7": 4570
+    },
+    {
+      "id": "adultoMayor",
+      "etiqueta": "Adulto mayor",
+      "integraciones1a4": 3330,
+      "integraciones5a7": 4080
+    },
+    {
+      "id": "estudiantil",
+      "etiqueta": "Estudiantil",
+      "integraciones1a4": 1600,
+      "integraciones5a7": 2350
+    },
+    {
+      "id": "pcd",
+      "etiqueta": "Persona con discapacidad",
+      "integraciones1a4": 2720,
+      "integraciones5a7": 3470
+    },
+    {
+      "id": "alPortador",
+      "etiqueta": "Al portador / Eventual",
+      "integraciones1a4": 4400,
+      "integraciones5a7": 5150
+    }
+  ],
+  "especiales": {
+    "cableArvi": {
+      "linea": "L",
+      "etiqueta": "Cable Arví (Línea L)",
+      "nota": "Tarifa independiente: no está incluida en la integración del sistema.",
+      "tarifas": [
+        {
+          "id": "estratos123Amva",
+          "valor": 3900,
+          "etiqueta": "Estratos 1, 2 y 3 del AMVA"
+        },
+        {
+          "id": "nacionales",
+          "valor": 11900,
+          "etiqueta": "Nacionales / Cívica personalizada"
+        },
+        {
+          "id": "extranjeros",
+          "valor": 26700,
+          "etiqueta": "Extranjeros / Al portador"
+        }
+      ]
+    }
+  }
+}

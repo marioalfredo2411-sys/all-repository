@@ -1,0 +1,49 @@
+{
+  "name": "metro-medellin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mapa interactivo del sistema integrado Metro de Medellín (PWA + apps nativas iOS/Android)",
+  "type": "module",
+  "scripts": {
+    "data:check": "node scripts/validate-data.mjs",
+    "data:build": "npm run data:check && node scripts/build-data.mjs",
+    "data:report": "node scripts/data-report.mjs",
+    "data:import": "node scripts/import-csv.mjs",
+    "data:sync": "node scripts/sync-osm.mjs",
+    "db:sql": "node scripts/build-sql.mjs",
+    "db:test": "npm run db:sql && node scripts/db-test.mjs",
+    "db:pull": "node scripts/supabase-pull.mjs",
+    "db:push": "npm run db:sql && supabase db push",
+    "build": "npm run data:build && node scripts/build-www.mjs",
+    "sync": "npm run build && cap sync",
+    "assets": "node scripts/make-assets.mjs && capacitor-assets generate --iconBackgroundColor #ffffff --iconBackgroundColorDark #ffffff --splashBackgroundColor #0a0e1a --splashBackgroundColorDark #0a0e1a",
+    "android:open": "npm run sync && cap open android",
+    "android:run": "npm run sync && cap run android",
+    "android:apk": "npm run sync && cd android && gradlew.bat assembleDebug",
+    "android:bundle": "npm run sync && cd android && gradlew.bat bundleRelease",
+    "ios:open": "npm run sync && cap open ios",
+    "ios:run": "npm run sync && cap run ios",
+    "serve": "npm run pwa && node scripts/serve.mjs",
+    "db:correcciones": "node scripts/revisar-correcciones.mjs",
+    "pwa": "node scripts/build-pwa.mjs",
+    "vendor": "node scripts/vendor-assets.mjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/browser": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/geolocation": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@capacitor/network": "^7.0.0",
+    "@capacitor/splash-screen": "^7.0.0",
+    "@capacitor/status-bar": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.0.0",
+    "@electric-sql/pglite": "^0.5.4",
+    "esbuild": "^0.28.2",
+    "sharp": "^0.32.6"
+  }
+}

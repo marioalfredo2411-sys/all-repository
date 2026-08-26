@@ -1,0 +1,42 @@
+/* Ajustes exclusivos del build nativo (Capacitor). Se inyecta desde build-www.mjs. */
+
+/* Sensación de app: sin selección de texto ni menú contextual al mantener
+   pulsado, salvo en los campos donde el usuario sí escribe. */
+.capacitor body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+.capacitor input,
+.capacitor textarea {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Aviso de red caída: los tiles y Overpass son remotos. */
+#offline-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + var(--safe-bottom, 0px));
+  transform: translateX(-50%) translateY(20px);
+  z-index: 2000;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: rgba(208, 24, 24, 0.94);
+  color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s;
+}
+#offline-banner.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
