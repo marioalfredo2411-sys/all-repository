@@ -2,7 +2,7 @@
    Estrategia: precache del "app shell" + stale-while-revalidate en tiempo de ejecución.
    El juego solo/vs CPU funciona 100% offline; el multijugador necesita conexión. */
 
-const VERSION = 'v1.2.0';
+const VERSION = 'v1.4.0';
 const CACHE = `baseball-dice-${VERSION}`;
 
 const APP_SHELL = [

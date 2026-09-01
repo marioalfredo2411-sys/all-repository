@@ -85,7 +85,15 @@ input[type=text]:focus{border-color:var(--red)}
 #rollCanvas.active{opacity:1}
 
 /* DICE BAR */
-#diceBar{position:relative;z-index:11;width:100%;padding:10px 14px calc(16px + env(safe-area-inset-bottom));background:rgba(6,16,9,.88);border-top:1px solid rgba(212,160,23,.2);backdrop-filter:blur(10px)}
+#diceBar{position:relative;z-index:11;width:100%;padding:6px 14px calc(16px + env(safe-area-inset-bottom));background:rgba(6,16,9,.88);border-top:1px solid rgba(212,160,23,.2);backdrop-filter:blur(10px)}
+#diceBarTop{display:flex;justify-content:flex-start;margin-bottom:2px}
+#exitBtn{background:rgba(192,57,43,.14);border:1px solid rgba(192,57,43,.5);color:#ff9a8a;
+  font-family:'Oswald',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;
+  padding:5px 12px;border-radius:20px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#exitBtn:active{transform:scale(.95)}
+#confirmMsg{font-size:13px;letter-spacing:1px;color:var(--cream);line-height:1.55}
+#goReason{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:3px;color:var(--gold);text-align:center;margin:2px 0 4px;text-transform:uppercase}
+#goReason:empty{display:none}
 #diceWrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px}
 #diceCenter{flex:1;display:flex;flex-direction:column;align-items:center;min-width:0}
 .die-svg{width:70px;height:70px;filter:drop-shadow(2px 3px 5px rgba(0,0,0,.25));flex-shrink:0}
@@ -146,7 +154,7 @@ input[type=text]:focus{border-color:var(--red)}
 }
 
 /* ═══ SEMÁFORO B / S / O ═══ */
-.bso{position:absolute;right:8px;bottom:calc(168px + env(safe-area-inset-bottom));z-index:5;
+.bso{position:absolute;right:8px;bottom:calc(212px + env(safe-area-inset-bottom));z-index:5;
   display:flex;flex-direction:column;align-items:center;gap:6px;padding:7px 8px 8px;border-radius:16px;
   background:linear-gradient(#12271d,#0a1510);border:1px solid rgba(212,160,23,.22);
   box-shadow:0 6px 20px rgba(0,0,0,.5)}
@@ -157,18 +165,18 @@ input[type=text]:focus{border-color:var(--red)}
 .bso-row{display:flex;align-items:center;gap:6px}
 .bso-row>span{font-family:'Oswald',sans-serif;font-size:11px;font-weight:600;color:rgba(255,255,255,.4);width:9px;text-align:center}
 .bso-lamp{width:33px;height:33px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-family:'Bebas Neue',sans-serif;font-size:19px;font-style:normal;
-  background:rgba(255,255,255,.06);color:rgba(255,255,255,.28);
+  font-family:'Oswald',sans-serif;font-weight:700;font-size:16px;font-style:normal;
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.32);
   border:2px solid rgba(255,255,255,.08);box-shadow:inset 0 1px 3px rgba(0,0,0,.45);transition:all .25s}
-.bso-lamp.on{color:#0a1510}
+.bso-lamp.on{color:#0a1510;text-shadow:0 1px 0 rgba(255,255,255,.35)}
 .bso-lamp.b.on{background:radial-gradient(circle at 35% 30%,#ffe08a,#d4a017);border-color:#ffe8a6;box-shadow:0 0 16px rgba(212,160,23,.85)}
 .bso-lamp.s.on{background:radial-gradient(circle at 35% 30%,#9ff0b6,#2a9d54);border-color:#b8f5c8;box-shadow:0 0 16px rgba(42,157,84,.8)}
 .bso-lamp.o.on{background:radial-gradient(circle at 35% 30%,#ff9385,#c0392b);border-color:#ffb8ac;box-shadow:0 0 16px rgba(192,57,43,.85)}
-@media(max-height:620px){.bso{bottom:calc(150px + env(safe-area-inset-bottom));transform:scale(.8);transform-origin:bottom right}}
+@media(max-height:620px){.bso{bottom:calc(176px + env(safe-area-inset-bottom));transform:scale(.76);transform-origin:bottom right}}
 
 /* ═══ PIZARRA DE ENTRADAS (LINE SCORE) ═══ */
 .lineOverlay{position:absolute;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;
-  padding:16px;background:rgba(6,14,9,.85);backdrop-filter:blur(6px);animation:lineIn .28s ease}
+  padding:16px;background:rgba(6,14,9,.92);backdrop-filter:blur(7px);animation:lineIn .28s ease}
 .lineOverlay.hidden{display:none!important}
 @keyframes lineIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 .lineCard{width:100%;max-width:440px;background:linear-gradient(#123024,#0b1a13);
@@ -251,12 +259,16 @@ input[type=text]:focus{border-color:var(--red)}
     <div style="margin:16px 0 10px;border-top:1px solid #e0d8cc"></div>
     <div id="plist"></div>
     <div class="smsg" id="lstatus">Esperando oponente…</div>
+    <button class="btn btn-dark mt10" style="font-size:15px;padding:11px" onclick="quitGame()">← SALIR DE LA SALA</button>
   </div>
 </div>
 
 <!-- GAME -->
 <div id="gameScreen" class="screen hidden">
   <div id="diceBar">
+    <div id="diceBarTop">
+      <button id="exitBtn" onclick="quitGame()">✕ SALIR</button>
+    </div>
     <div id="diceWrap">
       <svg class="die-svg" id="die1" viewBox="0 0 80 80"><rect x="4" y="4" width="72" height="72" rx="14" fill="white" stroke="#2a2a2a" stroke-width="2.5"/><g id="d1g" fill="#1a1a1a"></g></svg>
       <div id="diceCenter">
@@ -274,6 +286,7 @@ input[type=text]:focus{border-color:var(--red)}
 <div id="goScreen" class="screen hidden">
   <div class="wo" id="woText">—</div>
   <div class="fs" id="fsText">0 — 0</div>
+  <div id="goReason"></div>
   <div id="goLineWrap" class="lineGridWrap"><table class="lineGrid" id="goLineGrid"></table></div>
   <div style="margin-top:14px;width:100%;max-width:300px">
     <button class="btn btn-gold" onclick="newGame()">⚾ JUGAR DE NUEVO</button>
@@ -286,6 +299,18 @@ input[type=text]:focus{border-color:var(--red)}
   <div class="bso-row"><span>B</span><i id="bsoB" class="bso-lamp b">0</i></div>
   <div class="bso-row"><span>S</span><i id="bsoS" class="bso-lamp s">0</i></div>
   <div class="bso-row"><span>O</span><i id="bsoO" class="bso-lamp o">0</i></div>
+</div>
+
+<!-- CONFIRMACIÓN (salir) -->
+<div id="confirmOverlay" class="lineOverlay hidden">
+  <div class="lineCard" style="max-width:340px;text-align:center">
+    <div class="lineTitle" id="confirmTitle">¿SALIR?</div>
+    <div id="confirmMsg"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-dark" id="confirmNo" style="flex:1;font-size:16px">SEGUIR</button>
+      <button class="btn btn-red" id="confirmYes" style="flex:1;font-size:16px">SALIR</button>
+    </div>
+  </div>
 </div>
 
 <!-- PIZARRA DE ENTRADAS -->
@@ -340,15 +365,15 @@ function stageH(){return STAGE.clientHeight||window.innerHeight;}
 function resize(){CV.width=FW=stageW();CV.height=FH=stageH();calcField();}
 // Recorte del PNG fuente (1408x768) que se dibuja, para que la cancha se vea
 // completa (las 4 bases) sin quedar diminuta en pantallas verticales.
-const FIELD_CROP={l:0.10,r:0.90,t:0.03,b:1.0};
+const FIELD_CROP={l:0.15,r:0.85,t:0.05,b:1.0};
 function calcField(){
-  const BARH=160;
+  const BARH=182;
   const avH=FH-BARH;
   const C=FIELD_CROP;
   const srcW=1408*(C.r-C.l), srcH=768*(C.b-C.t);
   const cropAR=srcW/srcH;
-  const topPad=Math.max(50, avH*0.02);
-  const botPad=Math.max(96, avH*0.10);   // sitio para tag de turno + registro
+  const topPad=Math.max(46, avH*0.02);
+  const botPad=Math.max(140, avH*0.14);   // sitio para tag de turno + registro
   const availW=FW*0.985;
   const availH=Math.max(120, avH-topPad-botPad);
   const scale=Math.min(availW/srcW, availH/srcH);
@@ -375,7 +400,7 @@ function bpos(b){return [FC.home,FC.first,FC.second,FC.third][b]||FC.home;}
 
 function drawField(){
   const {cx,cy,r,iX,iY,iW,iH}=FC;
-  const BARH=160, avH=FH-BARH;
+  const BARH=182, avH=FH-BARH;
   // Fondo (degradado verde estadio) alrededor de la cancha
   const bg=CX.createLinearGradient(0,0,0,FH);
   bg.addColorStop(0,'#173a24'); bg.addColorStop(1,'#0e2416');
@@ -397,7 +422,7 @@ function drawRunners(){
     rn.x+=(rn.tx-rn.x)*.13;rn.y+=(rn.ty-rn.y)*.13;
     const {r,iY,iH}=FC;
     // Perspective scale: runners near top of field are smaller
-    const avH=FH-160;
+    const avH=FH-182;
     const normY=Math.max(0,Math.min(1,(rn.y-iY)/(iH||avH)));
     const perspScale=0.55+normY*0.55; // 0.55 at top, 1.1 at bottom
     const RS=r*.11*perspScale;
@@ -456,7 +481,7 @@ function spawnP(x,y,color,n){
 function drawHUD(){
   if(!gs) return;
   const {cx,cy,r}=FC;
-  const BARH=160,avH=FH-BARH;
+  const BARH=182,avH=FH-BARH;
   const px=r*.012; // scale unit
 
   // ── TOP BAR: inning + half ──
@@ -516,48 +541,30 @@ function drawHUD(){
   drawScorePanel(PAD, 'HOME', gs.scores.home, hn, true);
   drawScorePanel(FW-PAD-scoreW, 'AWAY', gs.scores.away, an, false);
 
-  // ── OUTS — anchored just below home plate ──
-  const outPanY=FC.home.y + r*.22;
-  const outPanW=r*.78, outPanH=r*.32;
-  CX.save();
-  CX.fillStyle='rgba(4,10,6,.78)';
-  roundRect(CX, cx-outPanW/2, outPanY, outPanW, outPanH, 9); CX.fill();
-  CX.strokeStyle='rgba(255,255,255,.1)'; CX.lineWidth=1;
-  roundRect(CX, cx-outPanW/2, outPanY, outPanW, outPanH, 9); CX.stroke();
-  CX.textAlign='center'; CX.textBaseline='middle';
-  CX.font=`600 ${Math.round(r*.09)}px 'Oswald',sans-serif`;
-  CX.fillStyle='rgba(255,255,255,.45)'; CX.fillText('OUTS', cx, outPanY+outPanH*.28);
-  const dotR=r*.07, dotGap=r*.21, dotY2=outPanY+outPanH*.73;
-  for(let i=0;i<2;i++){
-    const dx=cx+(i===0?-dotGap/2:dotGap/2);
-    CX.beginPath(); CX.arc(dx,dotY2,dotR,0,Math.PI*2);
-    CX.fillStyle=gs.outs>i?'#c0392b':'rgba(255,255,255,.12)';
-    CX.shadowColor=gs.outs>i?'rgba(192,57,43,.9)':'transparent';
-    CX.shadowBlur=gs.outs>i?10:0;
-    CX.fill();
-  }
-  CX.restore();
+  // (El conteo de OUTS ahora vive en el semáforo B/S/O)
+  const fieldBottom=FC.iY+FC.iH;
 
-  // ── BATTER / TURN TAG (above dice bar) ──
+  // ── BATTER / TURN TAG (justo debajo de la cancha) ──
   const bat=gs.currentBatter;
   const batName=(gs.players[bat]||bat).toUpperCase();
   const myTurn=isSolo?(bat==='home'):(bat===myRole);
   const cpuTurn=isSolo&&bat==='away';
   const turnLabel=cpuTurn?'🤖 CPU AL BATE':myTurn?'👆 '+batName+' AL BATE':'⏳ '+batName+' AL BATE';
-  const tagY=avH-36, tagH=28;
+  const tagH=Math.round(r*.26);
+  const tagY=Math.min(fieldBottom+14, avH-tagH-8);
   CX.save();
   CX.fillStyle=myTurn?'rgba(192,57,43,.85)':'rgba(6,16,9,.80)';
-  roundRect(CX, cx-r*.95, tagY, r*1.9, tagH, 8); CX.fill();
+  roundRect(CX, cx-r*.98, tagY, r*1.96, tagH, 8); CX.fill();
   CX.textAlign='center'; CX.textBaseline='middle';
   CX.font=`${Math.round(r*.12)}px 'Bebas Neue', sans-serif`;
   CX.fillStyle='#f5f0e8'; CX.fillText(turnLabel, cx, tagY+tagH/2);
   CX.restore();
 
-  // ── RECENT PLAYS LOG (bottom-left corner of field) ──
+  // ── RECENT PLAYS LOG (debajo del tag de turno, a la izquierda) ──
   const log=(gs.log||[]).slice(-4).reverse();
   if(log.length>0){
     const lx=12, lw=r*1.1, lh=log.length*18+10;
-    const ly=avH-lh-72;
+    const ly=Math.min(tagY+tagH+10, avH-lh-8);
     CX.save();
     CX.fillStyle='rgba(4,12,6,.72)';
     roundRect(CX,lx,ly,lw,lh,7);CX.fill();
@@ -1063,7 +1070,7 @@ let gs=null,myRole=null,myName='',roomId='',storeKey='';
 let isSolo=false,cpuDiff='normal',cpuTimeout=null;
 let pollInterval=null,bc=null,selInnings=6,totalInnings=6;
 
-const initState=()=>({inning:1,half:'top',outs:0,balls:0,strikes:0,bases:[false,false,false],scores:{home:0,away:0},line:{away:[],home:[]},hits:{home:0,away:0},currentBatter:'away',log:[],rollCount:0,gameOver:false,players:{home:'',away:''},lastRoll:null,lastResult:null,lastUpdate:Date.now(),totalInnings:selInnings});
+const initState=()=>({inning:1,half:'top',outs:0,balls:0,strikes:0,bases:[false,false,false],scores:{home:0,away:0},line:{away:[],home:[]},hits:{home:0,away:0},currentBatter:'away',log:[],rollCount:0,gameOver:false,forfeit:null,players:{home:'',away:''},lastRoll:null,lastResult:null,lastUpdate:Date.now(),totalInnings:selInnings});
 
 // sync
 const STORE='https://jsonstore.io/';
@@ -1071,7 +1078,7 @@ async function save(s){if(!storeKey)return;try{await fetch(STORE+storeKey,{metho
 async function load(){if(!storeKey)return null;try{const r=await fetch(STORE+storeKey+'?nc='+Date.now());if(!r.ok)return null;const j=await r.json();return j.result?j.result.data:null;}catch(e){return null;}}
 function bcast(s){try{if(bc)bc.postMessage({type:'state',state:s});}catch(e){}try{localStorage.setItem('bb_'+roomId,JSON.stringify(s));}catch(e){}save(s);}
 function setupSync(){try{bc=new BroadcastChannel('bb_'+roomId);bc.onmessage=e=>{if(e.data?.type==='state'&&(!gs||e.data.state.lastUpdate>gs.lastUpdate)){gs=e.data.state;totalInnings=gs.totalInnings||6;syncRunners();renderGame();}};}catch(e){}}
-function startPoll(){if(pollInterval)clearInterval(pollInterval);pollInterval=setInterval(async()=>{const r=await load();if(r&&(!gs||r.lastUpdate>gs.lastUpdate+200)){gs=r;totalInnings=gs.totalInnings||6;if(!document.getElementById('gameScreen').classList.contains('hidden')){syncRunners();renderGame();}else{renderLobby();checkReady();}}try{const ls=JSON.parse(localStorage.getItem('bb_'+roomId)||'null');if(ls&&(!gs||ls.lastUpdate>gs.lastUpdate+200)){gs=ls;totalInnings=gs.totalInnings||6;renderGame();}}catch(e){}},2000);}
+function startPoll(){if(pollInterval)clearInterval(pollInterval);pollInterval=setInterval(async()=>{if(!roomId||!storeKey)return;const r=await load();if(!roomId||!storeKey)return;if(r&&(!gs||r.lastUpdate>gs.lastUpdate+200)){gs=r;totalInnings=gs.totalInnings||6;if(!document.getElementById('gameScreen').classList.contains('hidden')){syncRunners();renderGame();}else{renderLobby();checkReady();}}try{const ls=JSON.parse(localStorage.getItem('bb_'+roomId)||'null');if(ls&&(!gs||ls.lastUpdate>gs.lastUpdate+200)){gs=ls;totalInnings=gs.totalInnings||6;renderGame();}}catch(e){}},2000);}
 
 // screens
 function showScreen(id){['homeScreen','soloScreen','lobbyScreen','gameScreen','goScreen'].forEach(s=>{document.getElementById(s).classList.toggle('hidden',s!==id);});const b=document.getElementById('bso');if(b)b.classList.toggle('hidden',id!=='gameScreen');}
@@ -1156,12 +1163,14 @@ async function rollDice(){
   const d1=Math.ceil(Math.random()*6),d2=Math.ceil(Math.random()*6);
   // Play cup animation (blocks until done)
   await playRollAnimation(d1,d2);
+  if(!gs)return;   // el usuario salió durante la animación
   // Update SVG dice to final values
   drawDie('die1','d1g',d1);drawDie('die2','d2g',d2);
   const result=getOutcome(d1,d2);
   document.getElementById('comboLbl').textContent=d1+' + '+d2+' = '+(d1+d2);
   if(d1===d2) triggerDoublesAnim(d1,d2);
   await processResult(result,d1,d2);
+  if(!gs)return;
   gs.lastRoll=[d1,d2];gs.lastResult=result;gs.lastUpdate=Date.now();
   bcast(gs);renderGame();
   if(isSolo&&!gs.gameOver&&gs.currentBatter==='away')scheduleCpu();
@@ -1169,6 +1178,7 @@ async function rollDice(){
 
 // ─── PROCESS RESULT WITH ANIMATION ───
 async function processResult(result,d1,d2){
+  if(!gs)return;
   const bat=gs.currentBatter,bn=gs.players[bat];
   if(!gs.line)gs.line={away:[],home:[]};
   if(!gs.hits)gs.hits={home:0,away:0};
@@ -1188,6 +1198,7 @@ async function processResult(result,d1,d2){
       'FLY OUT':{x:FC.cx+(Math.random()-.5)*FC.r*2.4,y:FC.cy-FC.r*(1+Math.random()*.8)}
     }[result]||FC.pitch;
     shootBall(0,dst.x,dst.y,null);await sleep(350);
+    if(!gs)return;
     gs.outs++;
     if(gs.outs>=3){
       await sleep(200);gs.outs=0;gs.balls=0;gs.strikes=0;gs.bases=[false,false,false];gs.rollCount=0;runners=[];
@@ -1197,26 +1208,29 @@ async function processResult(result,d1,d2){
   } else if(result==='WALK'){await advance(1,false,bat);}
   else if(result==='SINGLE'){
     const rx=FC.cx+(Math.random()-.5)*FC.r*2,ry=FC.cy-FC.r*(.8+Math.random()*.8);
-    shootBall(0,rx,ry,null);await sleep(380);await advance(1,true,bat);
+    shootBall(0,rx,ry,null);await sleep(380);if(!gs)return;await advance(1,true,bat);
   } else if(result==='DOUBLE'){
     const rx=FC.cx+(Math.random()<.5?-1:1)*(FC.r*2+Math.random()*FC.r*.8),ry=FC.cy-FC.r*(.5+Math.random()*1.1);
-    shootBall(0,rx,ry,null);await sleep(380);await advance(2,true,bat);
+    shootBall(0,rx,ry,null);await sleep(380);if(!gs)return;await advance(2,true,bat);
   } else if(result==='TRIPLE'){
     const rx=FC.cx+(Math.random()-.5)*FC.r*2.3,ry=FC.cy-FC.r*(1.5+Math.random());
-    shootBall(0,rx,ry,null);await sleep(380);await advance(3,true,bat);
+    shootBall(0,rx,ry,null);await sleep(380);if(!gs)return;await advance(3,true,bat);
   } else if(result==='HOME RUN'){
     shootBall(0,FC.cx+(Math.random()-.5)*FC.r,FC.cy-FC.r*3.1,()=>{spawnP(FC.cx,FC.cy-FC.r*2.5,'#ffd700',45);spawnP(FC.cx,FC.cy-FC.r*2.5,'#ff6600',28);});
     await sleep(600);
+    if(!gs)return;
     let runs=1+gs.bases.filter(Boolean).length;
     addRuns(bat,runs);gs.bases=[false,false,false];runners=[];
     toast('🎆 HOME RUN! +'+runs+' carrera'+(runs>1?'s':'')+'!');
     spawnP(FC.home.x,FC.home.y,'#ffd700',55);spawnP(FC.home.x,FC.home.y,'#c0392b',35);
     await sleep(400);
   }
+  if(!gs)return;
   if(gs.inning>=tot&&gs.half==='bottom'&&gs.scores.home>gs.scores.away){gs.gameOver=true;}
 }
 
 async function advance(spaces,withRunner,team){
+  if(!gs)return;
   let runs=0;const b=[...gs.bases];
   for(let i=2;i>=0;i--){
     if(b[i]){
@@ -1250,11 +1264,13 @@ function scheduleCpu(){
     document.getElementById('cpuTh').classList.add('hidden');
     const[d1,d2]=cpuRoll();
     await playRollAnimation(d1,d2);
+    if(!gs)return;
     drawDie('die1','d1g',d1);drawDie('die2','d2g',d2);
     const result=getOutcome(d1,d2);
     document.getElementById('comboLbl').textContent=d1+' + '+d2+' = '+(d1+d2);
     if(d1===d2) triggerDoublesAnim(d1,d2);
     await processResult(result,d1,d2);
+    if(!gs)return;
     gs.lastRoll=[d1,d2];gs.lastResult=result;gs.lastUpdate=Date.now();
     renderGame();
     if(!gs.gameOver){if(gs.currentBatter==='away')scheduleCpu();else document.getElementById('cpuTh').classList.add('hidden');}
@@ -1264,18 +1280,61 @@ function scheduleCpu(){
 // ─── GAME OVER ───
 function showGO(){
   if(!gs)return;
-  const hs=gs.scores.home,as=gs.scores.away,hn=gs.players.home,an=gs.players.away;
-  document.getElementById('woText').textContent=hs>as?(hn||'HOME')+' GANA!':as>hs?(an||'AWAY')+' GANA!':'¡EMPATE!';
-  document.getElementById('fsText').textContent=hs+' — '+as;
+  lineScoreShowing=false;clearTimeout(_lineTimer);
+  document.getElementById('lineOverlay').classList.add('hidden');
+  document.getElementById('confirmOverlay').classList.add('hidden');
+  const hs=gs.scores.home,as=gs.scores.away,hn=gs.players.home||'HOME',an=gs.players.away||'AWAY';
+  const reasonEl=document.getElementById('goReason');
+  if(gs.forfeit){
+    const winRole=gs.forfeit==='home'?'away':'home';
+    const winName=winRole==='home'?hn:an;
+    const loseName=gs.forfeit==='home'?hn:an;
+    document.getElementById('woText').textContent=winName+' GANA';
+    document.getElementById('fsText').textContent=hs+' — '+as;
+    reasonEl.textContent=(gs.forfeit===myRole)?'Abandonaste la partida':loseName+' abandonó la partida';
+  }else{
+    document.getElementById('woText').textContent=hs>as?hn+' GANA!':as>hs?an+' GANA!':'¡EMPATE!';
+    document.getElementById('fsText').textContent=hs+' — '+as;
+    reasonEl.textContent='';
+  }
   spawnP(FW*.5,FH*.42,'#ffd700',70);spawnP(FW*.5,FH*.42,'#c0392b',45);
   buildLineTable(document.getElementById('goLineGrid'));
   showScreen('goScreen');if(pollInterval)clearInterval(pollInterval);
 }
 function newGame(){
   if(pollInterval)clearInterval(pollInterval);if(cpuTimeout)clearTimeout(cpuTimeout);
+  if(bc){try{bc.close();}catch(e){}bc=null;}
   resetBoards();
-  gs=null;roomId='';storeKey='';isSolo=false;runners=[];particles=[];
+  const co=document.getElementById('confirmOverlay');if(co)co.classList.add('hidden');
+  gs=null;roomId='';storeKey='';isSolo=false;myRole=null;runners=[];particles=[];
   document.getElementById('hstatus').textContent='';showScreen('homeScreen');
+}
+
+// ─── SALIR DE LA PARTIDA ───
+let _confirmCb=null;
+function askConfirm(title,msg,onYes){
+  _confirmCb=onYes;
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmMsg').textContent=msg;
+  document.getElementById('confirmOverlay').classList.remove('hidden');
+}
+function quitGame(){
+  const inGame=!document.getElementById('gameScreen').classList.contains('hidden');
+  const inLobby=!document.getElementById('lobbyScreen').classList.contains('hidden');
+  const multiActive=inGame&&gs&&!gs.gameOver&&!isSolo&&!!roomId;
+  const msg=multiActive
+    ? 'Si sales ahora, tu oponente ganará la partida por default.'
+    : inLobby ? 'Saldrás de la sala de espera.'
+    : 'Se perderá el progreso de esta partida.';
+  askConfirm('¿SALIR DE LA PARTIDA?',msg,async()=>{
+    if(multiActive){
+      gs.forfeit=myRole;gs.gameOver=true;gs.lastUpdate=Date.now();
+      bcast(gs);
+      try{await save(gs);}catch(e){}
+    }
+    toast('Saliste de la partida');
+    newGame();
+  });
 }
 
 // ─── REF TABLE ───
@@ -1389,6 +1448,9 @@ try{const saved=localStorage.getItem('bb_pname');if(saved){document.getElementBy
 drawDie('die1','d1g',1);drawDie('die2','d2g',1);
 selDiff('normal');selInn(6);
 document.addEventListener('click',e=>{const p=document.getElementById('refpanel'),b=document.getElementById('reftog');if(p.classList.contains('open')&&!p.contains(e.target)&&e.target!==b)p.classList.remove('open');});
+// Confirmación de salida
+document.getElementById('confirmYes').onclick=()=>{const cb=_confirmCb;_confirmCb=null;document.getElementById('confirmOverlay').classList.add('hidden');if(cb)cb();};
+document.getElementById('confirmNo').onclick=()=>{_confirmCb=null;document.getElementById('confirmOverlay').classList.add('hidden');};
 </script>
 
 <!-- ═══ PWA: registro del Service Worker ═══ -->

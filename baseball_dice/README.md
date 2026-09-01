@@ -147,6 +147,25 @@ que igualmente hay que *archivar* y firmar en un Mac.
 
 ## 5. Versiones
 
+### v1.4.0 — salir de la partida / abandono
+- Botón **✕ SALIR** en la barra de dados durante el juego y **← SALIR DE LA SALA** en el lobby.
+- Pide confirmación (overlay propio, funciona en PWA instalada).
+- **Multijugador**: si un jugador sale con la partida en curso, se marca `gs.forfeit`
+  + `gs.gameOver` y se difunde; el rival recibe el estado y ve *"X GANA · Y abandonó la partida"*.
+- **Solo**: solo confirma y vuelve al inicio.
+- Guardas `if(!gs)` en las cadenas async (roll / CPU / processResult) para no romper si
+  el usuario sale a mitad de una animación.
+- `sw.js` → caché `v1.4.0`.
+
+### v1.3.0 — cancha más pequeña + semáforo reubicado
+- La cancha ahora se dibuja con **contain-fit** (recorte `FIELD_CROP` del PNG) para que
+  se vean **las 4 bases completas** en pantallas verticales, con sombra que la separa del fondo.
+- El `r` de referencia del HUD se acota para que el marcador siga legible con la cancha pequeña.
+- El tag de turno y el registro de jugadas se anclan **justo debajo de la cancha**.
+- El panel de OUTS del campo se elimina (su info ya está en el semáforo).
+- El **semáforo B/S/O baja** a la esquina inferior derecha, fuera de la cancha; dígitos en Oswald bold.
+- `sw.js` → caché `v1.3.0`.
+
 ### v1.2.0 — pizarra de entradas + semáforo B/S/O
 - **Pizarra (line score)**: al terminar cada media entrada (3 outs / cambio de lado)
   aparece una pizarra estilo béisbol con las carreras por entrada de cada equipo,
