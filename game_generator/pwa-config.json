@@ -1,0 +1,32 @@
+{
+  "inlineManifest": true,
+  "includeAssets": [
+    "offline.html",
+    "service-worker.js",
+    "manifest.json",
+    "browserconfig.xml"
+  ],
+  "optimizeImages": true,
+  "minVersions": {
+    "android": "8.0",
+    "ios": "13.0",
+    "windows": "10"
+  },
+  "deepLinks": [
+    {
+      "url": "/?tab=campamento",
+      "title": "Juegos para Campamento",
+      "description": "Actividades al aire libre"
+    },
+    {
+      "url": "/?tab=reunion",
+      "title": "Juegos para Reunión",
+      "description": "Dinámicas de integración"
+    },
+    {
+      "url": "/?tab=capacitacion",
+      "title": "Juegos para Capacitación",
+      "description": "Juegos educativos"
+    }
+  ]
+}

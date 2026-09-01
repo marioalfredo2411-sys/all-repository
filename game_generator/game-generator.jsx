@@ -125,42 +125,30 @@ export default function App() {
     if (!tiempo || !cantidad) return;
     setLoading(true); setError(""); setGames([]);
 
-    const prompt = `Genera exactamente ${cantidad} juegos grupales para ${tipo} que puedan realizarse en un total de ${tiempo} minutos.
-Distribuye el tiempo para que todos los juegos sumen aproximadamente ${tiempo} minutos.
-El contexto es: ${catInfo.label} — los juegos deben ser apropiados para ${catInfo.desc}.
-
-Responde ÚNICAMENTE con JSON válido con este formato:
-{
-  "juegos": [
-    {
-      "nombre": "Nombre del juego",
-      "duracion": "X min",
-      "explicacion": "Explicación clara de cómo se juega en 2-3 oraciones.",
-      "materiales": ["material1", "material2"]
-    }
-  ]
-}
-Si no se necesitan materiales, usa array vacío. No incluyas texto fuera del JSON.`;
-
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      // Llama al proxy del servidor (Netlify Function en prod, middleware de Vite
+      // en dev). La API key de Claude vive solo en el servidor, nunca aquí.
+      const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: prompt }],
-        }),
+        body: JSON.stringify({ tiempo, cantidad, tipo, categoria }),
       });
-      const data = await res.json();
-      const text = data.content?.map(c => c.text || "").join("") || "";
-      const clean = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
-      setGames(parsed.juegos || []);
-    } catch {
-      setError("Ocurrió un error generando los juegos. Intenta de nuevo.");
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || `Error ${res.status} al generar los juegos.`);
+      }
+
+      const juegos = Array.isArray(data.juegos) ? data.juegos : [];
+      setGames(juegos);
+      if (juegos.length === 0) {
+        setError("No se recibieron juegos. Intenta de nuevo o ajusta los parámetros.");
+      }
+    } catch (e) {
+      setError(e.message || "Ocurrió un error generando los juegos. Intenta de nuevo.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   const totalMin = games.reduce((s, g) => s + (parseInt(g.duracion) || 0), 0);

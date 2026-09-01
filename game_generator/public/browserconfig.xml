@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+  <msapplication>
+    <tile>
+      <square70x70logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 70'%3E%3Crect fill='%231A6B55' width='70' height='70'/%3E%3Ctext x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='40' font-weight='bold' fill='%23F47920' font-family='Segoe UI, sans-serif'%3EJ%3C/text%3E%3C/svg%3E"/>
+      <square150x150logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 150'%3E%3Crect fill='%231A6B55' width='150' height='150'/%3E%3Ctext x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='80' font-weight='bold' fill='%23F47920' font-family='Segoe UI, sans-serif'%3EJ%3C/text%3E%3C/svg%3E"/>
+      <wide310x150logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 310 150'%3E%3Crect fill='%231A6B55' width='310' height='150'/%3E%3Ctext x='85' y='75' dominant-baseline='middle' text-anchor='middle' font-size='80' font-weight='bold' fill='%23F47920' font-family='Segoe UI, sans-serif'%3EJ%3C/text%3E%3Ctext x='180' y='75' dominant-baseline='middle' text-anchor='start' font-size='40' font-weight='600' fill='%23FFFFFF' font-family='Segoe UI, sans-serif'%3EJuegos CCI AL%3C/text%3E%3C/svg%3E"/>
+      <square310x310logo src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 310 310'%3E%3Crect fill='%231A6B55' width='310' height='310'/%3E%3Ctext x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='180' font-weight='bold' fill='%23F47920' font-family='Segoe UI, sans-serif'%3EJ%3C/text%3E%3C/svg%3E"/>
+      <TileColor>#1A6B55</TileColor>
+    </tile>
+  </msapplication>
+</browserconfig>
