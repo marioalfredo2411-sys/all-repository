@@ -1,0 +1,38 @@
+{
+  "name": "autofinder-co",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Comparador de vehículos del mercado colombiano — PWA instalable, empaquetable como APK (Android) e IPA (iOS).",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --host",
+    "assets": "capacitor-assets generate --iconBackgroundColor #080b12 --iconBackgroundColorDark #080b12 --splashBackgroundColor #080b12 --splashBackgroundColorDark #080b12",
+    "cap:add:android": "vite build && cap add android",
+    "cap:add:ios": "vite build && cap add ios",
+    "cap:sync": "vite build && cap sync",
+    "android": "npm run cap:sync && cap open android",
+    "ios": "npm run cap:sync && cap open ios",
+    "android:apk": "npm run cap:sync && cd android && gradlew.bat assembleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/ios": "^7.0.0",
+    "@capacitor/splash-screen": "^7.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^7.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.0"
+  },
+  "browserslist": [
+    "chrome >= 90",
+    "safari >= 15",
+    "firefox >= 90"
+  ]
+}

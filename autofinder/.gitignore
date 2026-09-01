@@ -1,0 +1,25 @@
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+.env
+.env.*
+!.env.example
+
+# Capacitor — plataformas nativas generadas
+android/
+ios/
+
+# Salidas de build nativas
+*.apk
+*.aab
+*.ipa
+*.keystore
+*.jks
+
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>AutoFinder CO — Comparador de vehículos</title>
+    <meta
+      name="description"
+      content="Busca, filtra y compara vehículos nuevos, semi-nuevos y usados del mercado colombiano con precios en COP."
+    />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#080b12" />
+    <meta name="color-scheme" content="dark" />
+
+    <!-- iOS / IPA — “Añadir a pantalla de inicio” y WKWebView de Capacitor -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AutoFinder" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180.png" />
+
+    <!-- Android / APK -->
+    <meta name="application-name" content="AutoFinder CO" />
+    <meta name="mobile-web-app-status-bar-style" content="#080b12" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16.png" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AutoFinder CO" />
+    <meta property="og:title" content="AutoFinder CO — Comparador de vehículos" />
+    <meta
+      property="og:description"
+      content="Compara vehículos del mercado colombiano con precios en COP."
+    />
+    <meta property="og:image" content="/icons/icon-512.png" />
+    <meta property="og:locale" content="es_CO" />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- Tipografías de marca (el componente también las importa por CSS) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap"
+    />
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #080b12;
+        color: #e8edf5;
+        min-height: 100%;
+        overscroll-behavior-y: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        /* Notch / barra de gestos en iOS y Android */
+        padding: env(safe-area-inset-top) env(safe-area-inset-right)
+          env(safe-area-inset-bottom) env(safe-area-inset-left);
+      }
+      #root {
+        min-height: 100vh;
+      }
+      /* Pantalla de arranque: evita el flash blanco antes de montar React */
+      #boot {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: #080b12;
+        z-index: 9999;
+      }
+      #boot img {
+        width: 96px;
+        height: 96px;
+        animation: bootPulse 1.4s ease-in-out infinite;
+      }
+      @keyframes bootPulse {
+        0%,
+        100% {
+          opacity: 0.45;
+          transform: scale(0.96);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot img {
+          animation: none;
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="boot"><img src="/icons/icon-192.png" alt="AutoFinder CO" /></div>
+    <div id="root"></div>
+    <noscript>
+      <p style="font-family: system-ui, sans-serif; padding: 24px">
+        AutoFinder CO necesita JavaScript para funcionar.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
