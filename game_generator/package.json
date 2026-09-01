@@ -1,0 +1,33 @@
+{
+  "name": "juegos-cci-al",
+  "version": "1.0.0",
+  "description": "Generador de juegos grupales con IA - Juegos CCI AL",
+  "type": "module",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "npm run dev"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.122.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^5.0.0"
+  },
+  "keywords": [
+    "pwa",
+    "games",
+    "recreation",
+    "cci",
+    "react",
+    "ai",
+    "claude"
+  ],
+  "author": "CCI América Latina",
+  "license": "MIT"
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1A6B55" />
+  <title>Sin conexión - Juegos CCI AL</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #1A6B55, #104438);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 16px;
+      padding: 40px 24px;
+      text-align: center;
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(26, 107, 85, 0.2);
+    }
+    
+    .icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+    }
+    
+    h1 {
+      color: #1A6B55;
+      font-size: 24px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+    
+    p {
+      color: #6b8c7d;
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    
+    .button {
+      background: linear-gradient(135deg, #1A6B55, #104438);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(26, 107, 85, 0.3);
+    }
+    
+    .button:active {
+      transform: scale(0.98);
+    }
+    
+    .footer {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #cce4da;
+      font-size: 12px;
+      color: #999;
+    }
+    
+    .logo {
+      font-size: 48px;
+      font-weight: 800;
+      color: #F47920;
+      margin-bottom: 16px;
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 32px 20px;
+      }
+      
+      h1 {
+        font-size: 20px;
+      }
+      
+      p {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">J</div>
+    <div class="icon">📡</div>
+    <h1>Sin conexión</h1>
+    <p>Parece que no tienes conexión a Internet en este momento. Verifica tu conexión e intenta nuevamente.</p>
+    <button class="button" onclick="location.reload()">Reintentar</button>
+    <div class="footer">
+      <p>🏕️ MAYORDOMÍA · RECREACIÓN CON PROPÓSITO · COMUNIDAD · FE</p>
+      <p>© CCI América Latina</p>
+    </div>
+  </div>
+</body>
+</html>

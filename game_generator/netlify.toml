@@ -1,0 +1,60 @@
+[build]
+command = "npm install && npm run build"
+publish = "build"
+environment = { NODE_VERSION = "20" }
+
+[functions]
+directory = "netlify/functions"
+node_bundler = "esbuild"
+
+# El navegador llama a /api/generate; lo atiende la función serverless.
+# Debe ir ANTES del catch-all de la SPA.
+[[redirects]]
+from = "/api/generate"
+to = "/.netlify/functions/generate"
+status = 200
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
+[[headers]]
+for = "/*"
+[headers.values]
+X-UA-Compatible = "IE=edge"
+X-Content-Type-Options = "nosniff"
+X-Frame-Options = "DENY"
+X-XSS-Protection = "1; mode=block"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+[[headers]]
+for = "/manifest.json"
+[headers.values]
+Content-Type = "application/manifest+json"
+Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+for = "/service-worker.js"
+[headers.values]
+Content-Type = "application/javascript"
+Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+for = "/*.svg"
+[headers.values]
+Content-Type = "image/svg+xml"
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.js"
+[headers.values]
+Content-Type = "application/javascript"
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.css"
+[headers.values]
+Content-Type = "text/css"
+Cache-Control = "public, max-age=31536000, immutable"
