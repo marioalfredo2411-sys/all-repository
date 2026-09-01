@@ -1,0 +1,25 @@
+# Dependencias
+node_modules/
+
+# Salida de build web (se regenera con: npm run build)
+www/
+
+# Proyectos nativos generados por Capacitor (se regeneran con: npx cap add ...)
+android/
+ios/
+
+# Artefactos de compilación
+*.apk
+*.aab
+*.ipa
+*.keystore
+*.jks
+.gradle/
+build/
+DerivedData/
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,16 @@
+{
+  "appId": "com.jennypower.baseballdice",
+  "appName": "Baseball Dice",
+  "webDir": "www",
+  "backgroundColor": "#1a3a22",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "backgroundColor": "#1a3a22"
+  },
+  "ios": {
+    "backgroundColor": "#1a3a22",
+    "contentInset": "always"
+  }
+}

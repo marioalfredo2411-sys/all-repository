@@ -1,0 +1,11 @@
+<!doctype html><meta charset=utf-8><style>html,body{margin:0;background:#333}iframe{width:400px;height:850px;border:0}</style>
+<iframe src="/index.html" id=f></iframe>
+<script>
+document.getElementById('f').addEventListener('load',()=>{setTimeout(()=>{
+ const w=document.getElementById('f').contentWindow;
+ w.playRollAnimation=()=>Promise.resolve(); w.shootBall=(a,b,c,cb)=>{if(cb)cb()}; w.triggerDoublesAnim=()=>{};
+ w.selInn(6);w.document.getElementById('pname').value='ALFREDO';w.goSolo();
+ setTimeout(()=>{ w.selDiff('normal'); w.startSoloGame(); document.title='OK'; },500);
+},600);});
+window.onerror=(m)=>{document.title='ERR '+m;};
+</script>

@@ -1,0 +1,67 @@
+{
+  "name": "Baseball Dice",
+  "short_name": "Baseball Dice",
+  "description": "Juego de béisbol con dados. Juega solo contra la CPU o en multijugador por sala.",
+  "lang": "es",
+  "dir": "ltr",
+  "id": "/baseball-dice/",
+  "start_url": "./index.html?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#1a3a22",
+  "theme_color": "#0f2014",
+  "categories": ["games", "sports", "entertainment"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "icons/screenshot-portrait.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Partida de Baseball Dice en curso"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Jugar vs CPU",
+      "short_name": "Solo",
+      "description": "Empieza una partida rápida contra la CPU",
+      "url": "./index.html?mode=solo",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

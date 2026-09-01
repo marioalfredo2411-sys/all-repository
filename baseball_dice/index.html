@@ -338,31 +338,29 @@ const STAGE=document.getElementById('stage');
 function stageW(){return STAGE.clientWidth||window.innerWidth;}
 function stageH(){return STAGE.clientHeight||window.innerHeight;}
 function resize(){CV.width=FW=stageW();CV.height=FH=stageH();calcField();}
-// Recorte del PNG fuente (1408x768) que se dibuja, para que la cancha se vea
-// completa (las 4 bases) sin quedar diminuta en pantallas verticales.
-const FIELD_CROP={l:0.10,r:0.90,t:0.03,b:1.0};
 function calcField(){
   const BARH=160;
   const avH=FH-BARH;
-  const C=FIELD_CROP;
-  const srcW=1408*(C.r-C.l), srcH=768*(C.b-C.t);
-  const cropAR=srcW/srcH;
-  const topPad=Math.max(50, avH*0.02);
-  const botPad=Math.max(96, avH*0.10);   // sitio para tag de turno + registro
+  // Image aspect 1408x768 = 1.833
+  // "Contain" fit: se ve TODO el campo (las 4 bases), con margen alrededor.
+  const imgAR=1408/768;
+  const topPad=Math.max(52, avH*0.02);
+  const botPad=Math.max(18, avH*0.03);
   const availW=FW*0.985;
   const availH=Math.max(120, avH-topPad-botPad);
-  const scale=Math.min(availW/srcW, availH/srcH);
-  let iW=srcW*scale, iH=srcH*scale, iX,iY;
+  const scale=Math.min(availW/1408, availH/768);
+  let iW=1408*scale, iH=768*scale, iX,iY;
   iX=(FW-iW)/2;
-  iY=topPad + Math.min(18, (availH-iH)*0.5);
-  // Mapea coords normalizadas del PNG COMPLETO al recorte mostrado.
-  // home(0.503,0.825), 2b(0.493,0.275), 1b(0.758,0.510), 3b(0.248,0.510), pitch(0.503,0.525)
-  const mp=(nx,ny)=>({x:iX+(nx-C.l)/(C.r-C.l)*iW, y:iY+(ny-C.t)/(C.b-C.t)*iH});
+  iY=topPad + (availH-iH)*0.30;   // ligeramente hacia arriba
+  // Map image-relative positions (from visual inspection) to screen coords
+  // Image coords normalized: home(0.503,0.825), 2b(0.493,0.275), 1b(0.758,0.510), 3b(0.248,0.510), pitch(0.503,0.525)
+  const mp=(nx,ny)=>({x:iX+nx*iW, y:iY+ny*iH});
   const hmPos=mp(0.503,0.825);
   const sbPos=mp(0.493,0.275);
   const fbPos=mp(0.758,0.510);
   const tbPos=mp(0.248,0.510);
   const ptPos=mp(0.503,0.525);
+  // cx/cy/r kept for HUD layout reference (use center of diamond)
   const cx=FW*.5, cy=(hmPos.y+sbPos.y)/2;
   // r = referencia de tamaño; se acota para que el HUD siga legible con campo pequeño
   let r=Math.hypot(fbPos.x-tbPos.x, fbPos.y-tbPos.y)*.38;
@@ -380,12 +378,11 @@ function drawField(){
   const bg=CX.createLinearGradient(0,0,0,FH);
   bg.addColorStop(0,'#173a24'); bg.addColorStop(1,'#0e2416');
   CX.fillStyle=bg; CX.fillRect(0,0,FW,FH);
-  // Cancha (recorte del PNG) con sombra para separarla del fondo
+  // Cancha con sombra para separarla del fondo
   if(fieldImgReady){
-    const C=FIELD_CROP;
     CX.save();
     CX.shadowColor='rgba(0,0,0,.5)'; CX.shadowBlur=26; CX.shadowOffsetY=10;
-    CX.drawImage(FIELD_IMG, C.l*1408, C.t*768, (C.r-C.l)*1408, (C.b-C.t)*768, iX, iY, iW, iH);
+    CX.drawImage(FIELD_IMG, iX, iY, iW, iH);
     CX.restore();
   } else {
     CX.fillStyle='#287840'; CX.fillRect(iX, iY, iW, iH);
