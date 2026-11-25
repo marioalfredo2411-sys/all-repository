@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chat Clásico</title>
+<style>
+  :root{
+    --desk:#008080; --face:#c0c0c0; --hi:#ffffff; --lo:#808080; --dark:#404040;
+    --title:#000080; --text:#000; --log:#fff; --sys:#7a7a7a;
+    --ui:Tahoma,"MS Sans Serif",Verdana,sans-serif;
+    --mono:"Courier New",Courier,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:var(--desk);font:13px var(--ui);color:var(--text);display:flex;align-items:center;justify-content:center;padding:8px}
+  .win{background:var(--face);border:2px solid;border-color:var(--hi) var(--dark) var(--dark) var(--hi);box-shadow:1px 1px 0 #000;display:flex;flex-direction:column;width:min(980px,100%);height:min(680px,100%)}
+  .bar{background:var(--title);color:#fff;font-weight:bold;padding:3px 6px;display:flex;justify-content:space-between;align-items:center;margin:2px}
+  .bar small{font-weight:normal}
+  .inset{border:2px solid;border-color:var(--lo) var(--hi) var(--hi) var(--lo);background:var(--log)}
+  button,input{font:inherit}
+  button{background:var(--face);border:2px solid;border-color:var(--hi) var(--dark) var(--dark) var(--hi);padding:3px 12px;cursor:pointer;color:#000}
+  button:active{border-color:var(--dark) var(--hi) var(--hi) var(--dark);padding:4px 11px 2px 13px}
+  button:focus-visible,input:focus-visible{outline:1px dotted #000;outline-offset:-4px}
+  input[type=text]{border:2px solid;border-color:var(--lo) var(--hi) var(--hi) var(--lo);background:#fff;padding:3px 5px;min-width:0}
+  .login{margin:auto;width:min(340px,92%)}
+  .login .body{padding:14px;display:grid;gap:10px}
+  .login label{display:grid;gap:4px}
+  .hint{color:#333;font-size:12px;line-height:1.4}
+  #app{display:none;flex:1;min-height:0;flex-direction:column;padding:4px;gap:4px}
+  .main{flex:1;min-height:0;display:grid;grid-template-columns:170px 1fr 150px;gap:4px}
+  .col{display:flex;flex-direction:column;min-height:0;gap:4px}
+  .col h3{margin:0;font-size:12px;padding:2px 4px}
+  .list{flex:1;overflow:auto;padding:2px;font-family:var(--mono);font-size:13px}
+  .list div{padding:1px 4px;cursor:default;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #rooms div{cursor:pointer}
+  #rooms div:hover{background:#dde}
+  #rooms div.cur{background:var(--title);color:#fff}
+  .join{display:flex;gap:4px}
+  .join input{flex:1;width:100%}
+  .opt{font-size:12px;display:flex;gap:4px;align-items:center}
+  #log{flex:1;min-height:0;overflow:auto;padding:4px 6px;font:13px/1.45 var(--mono);overflow-wrap:anywhere}
+  #log .t{color:var(--sys)}
+  #log .s{color:var(--sys);font-style:italic}
+  #log .me{color:#800080}
+  #topic{padding:3px 6px;font-weight:bold}
+  .send{display:flex;gap:4px}
+  .send input{flex:1}
+  .status{font-size:12px;padding:2px 4px;border:2px solid;border-color:var(--lo) var(--hi) var(--hi) var(--lo);display:flex;justify-content:space-between;gap:8px}
+  @media (max-width:720px){
+    body{padding:0}
+    .win{height:100%}
+    .main{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+    .side,.users{display:none}
+    .side.open{display:flex}
+    #menu{display:inline-block}
+  }
+  @media (min-width:721px){#menu{display:none}}
+</style>
+</head>
+<body>
+
+<div class="win" id="win">
+  <div class="bar"><span>Chat Clásico</span><small id="who"></small></div>
+
+  <!-- Entrada -->
+  <div class="login" id="login">
+    <div class="win" style="height:auto;width:100%;box-shadow:none">
+      <div class="bar"><span>Entrar al chat</span></div>
+      <div class="body">
+        <label>Tu nombre o alias
+          <input type="text" id="nick" maxlength="20" autocomplete="off" autofocus>
+        </label>
+        <label>Sala
+          <input type="text" id="room0" maxlength="30" autocomplete="off" value="general">
+        </label>
+        <button id="enter">Entrar</button>
+        <div class="hint">Sin cuenta ni contraseña. Quien conozca el nombre de una sala puede entrar. Los mensajes no se guardan: solo los ven quienes están conectados.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div id="app">
+    <div class="main">
+      <div class="col side" id="side">
+        <h3>Salas</h3>
+        <div class="inset list" id="rooms"></div>
+        <div class="join">
+          <input type="text" id="newroom" maxlength="30" placeholder="Nueva sala" autocomplete="off">
+          <button id="go">Ir</button>
+        </div>
+        <label class="opt"><input type="checkbox" id="hidden"> Sala oculta (no aparece en la lista)</label>
+      </div>
+      <div class="col">
+        <div class="inset" id="topic"></div>
+        <div class="inset" id="log" aria-live="polite"></div>
+      </div>
+      <div class="col users">
+        <h3>En la sala</h3>
+        <div class="inset list" id="users"></div>
+      </div>
+    </div>
+    <form class="send" id="form">
+      <button type="button" id="menu">Salas</button>
+      <input type="text" id="msg" maxlength="500" placeholder="Escribe un mensaje… (/ayuda para comandos)" autocomplete="off">
+      <button type="submit">Enviar</button>
+    </form>
+    <div class="status"><span id="st">Conectando…</span><span id="cnt"></span></div>
+  </div>
+</div>
+
+<script type="module">
+import { joinRoom } from 'https://cdn.jsdelivr.net/npm/trystero@0.21.5/+esm';
+
+const APP = { appId: 'chat-clasico-ghpages-v1' };   // cambia esto para tener tu propia “red” de salas
+const $ = id => document.getElementById(id);
+const store = { get(k){ try{return localStorage.getItem(k)}catch{return null} }, set(k,v){ try{localStorage.setItem(k,v)}catch{} } };
+
+let nick = '', current = null, room = null, hidden = false;
+let peers = new Map();            // id -> alias en la sala actual
+let lobbyMap = new Map();         // id -> sala anunciada
+let sendState, sendMsg, sendHi;
+
+const cleanNick = s => (s||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,20);
+const cleanRoom = s => (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+                        .replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,30);
+const hhmm = () => new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
+const color = n => { let h=0; for(const c of n) h=(h*31+c.charCodeAt(0))>>>0; return `hsl(${h%360} 70% 30%)`; };
+
+/* ---------- Registro de mensajes ---------- */
+function line(html){ // html construido con nodos, nunca con texto del usuario
+  const log = $('log'), stick = log.scrollHeight - log.scrollTop - log.clientHeight < 40;
+  log.appendChild(html);
+  if(stick) log.scrollTop = log.scrollHeight;
+}
+function el(tag, cls, text){ const e=document.createElement(tag); if(cls) e.className=cls; if(text!=null) e.textContent=text; return e; }
+function sys(text){ const d=el('div','s'); d.append(el('span','t',`[${hhmm()}] `), `*** ${text}`); line(d); }
+function chat(who, text, isMe){
+  const d = el('div', isMe?'me':'');
+  d.append(el('span','t',`[${hhmm()}] `));
+  if(isMe){ d.append(`* ${who} ${text}`); }
+  else { const n = el('b',null,`<${who}>`); n.style.color = color(who); d.append(n, ' ', text); }
+  line(d);
+}
+
+/* ---------- Lista de usuarios y salas ---------- */
+function renderUsers(){
+  const box = $('users'); box.replaceChildren();
+  const names = [nick, ...peers.values()].sort((a,b)=>a.localeCompare(b,'es'));
+  names.forEach(n=>{ const d=el('div',null,n); d.style.color=color(n); if(n===nick) d.style.fontWeight='bold'; box.append(d); });
+  $('cnt').textContent = `${names.length} en la sala`;
+}
+function renderRooms(){
+  const counts = new Map();
+  for(const r of lobbyMap.values()) counts.set(r,(counts.get(r)||0)+1);
+  if(current && !hidden) counts.set(current,(counts.get(current)||0)+1);
+  if(!counts.has('general')) counts.set('general',0);
+  const box = $('rooms'); box.replaceChildren();
+  [...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).forEach(([r,n])=>{
+    const d = el('div', r===current?'cur':'', `#${r} (${n})`);
+    d.title = `Entrar a #${r}`;
+    d.onclick = () => enter(r);
+    box.append(d);
+  });
+}
+
+/* ---------- Lobby: descubrir salas activas ---------- */
+function startLobby(){
+  const lobby = joinRoom(APP, 'lobby');
+  const [s, g] = lobby.makeAction('state');
+  sendState = s;
+  lobby.onPeerJoin(id => sendState({ room: hidden ? null : current }, id));
+  lobby.onPeerLeave(id => { lobbyMap.delete(id); renderRooms(); });
+  g((d,id) => { d && d.room ? lobbyMap.set(id, cleanRoom(d.room)) : lobbyMap.delete(id); renderRooms(); });
+}
+const announce = () => sendState && sendState({ room: hidden ? null : current });
+
+/* ---------- Salas ---------- */
+async function enter(name){
+  name = cleanRoom(name);
+  if(!name){ sys('Nombre de sala no válido. Usa letras, números, - o _.'); return; }
+  if(name === current) return;
+  if(room){ try{ await room.leave(); }catch{} }
+  peers = new Map(); $('log').replaceChildren();
+  current = name; hidden = $('hidden').checked;
+  history.replaceState(null,'','#'+name);
+  $('topic').textContent = `#${name}`;
+  $('who').textContent = nick;
+  document.title = `#${name} · Chat Clásico`;
+  $('side').classList.remove('open');
+
+  room = joinRoom(APP, 'r:' + name);
+  let m, h;
+  [sendMsg, m] = room.makeAction('msg');
+  [sendHi,  h] = room.makeAction('hi');
+
+  room.onPeerJoin(id => sendHi({ nick }, id));
+  room.onPeerLeave(id => { const n = peers.get(id); peers.delete(id); if(n) sys(`${n} salió de la sala`); renderUsers(); renderRooms(); });
+  h((d,id) => {
+    const n = cleanNick(d && d.nick) || 'anónimo', old = peers.get(id);
+    peers.set(id, n);
+    if(!old) sys(`${n} entró a la sala`); else if(old !== n) sys(`${old} ahora es ${n}`);
+    renderUsers();
+  });
+  m((d,id) => {
+    const who = peers.get(id) || 'anónimo';
+    const text = String((d && d.t) || '').slice(0,500);
+    if(text) chat(who, text, !!(d && d.me));
+  });
+
+  sys(`Entraste a #${name}. Comparte el nombre de la sala (o este enlace) para invitar a otros.`);
+  renderUsers(); renderRooms(); announce();
+  $('st').textContent = 'Conectado (P2P). Si estás solo, espera a que alguien entre.';
+  $('msg').focus();
+}
+
+/* ---------- Envío y comandos ---------- */
+function submit(text){
+  text = text.trim(); if(!text) return;
+  if(text[0] === '/'){
+    const [cmd, ...rest] = text.slice(1).split(' '), arg = rest.join(' ').trim();
+    switch(cmd.toLowerCase()){
+      case 'nick': { const n = cleanNick(arg); if(!n) return sys('Uso: /nick NuevoAlias');
+        const old = nick; nick = n; store.set('nick', n); $('who').textContent = n;
+        sendHi && sendHi({ nick }); sys(`Ahora eres ${n} (antes ${old})`); renderUsers(); return; }
+      case 'me':   if(!arg) return sys('Uso: /me hace algo'); sendMsg({ t: arg, me: 1 }); chat(nick, arg, true); return;
+      case 'join': case 'sala': return enter(arg);
+      case 'ayuda': case 'help':
+        sys('Comandos: /nick alias · /me acción · /join sala · /ayuda'); return;
+      default: return sys(`Comando desconocido: /${cmd}. Escribe /ayuda`);
+    }
+  }
+  sendMsg({ t: text }); chat(nick, text, false);
+}
+
+/* ---------- Eventos ---------- */
+function login(){
+  const n = cleanNick($('nick').value);
+  if(!n){ $('nick').focus(); return; }
+  nick = n; store.set('nick', n);
+  const r = cleanRoom($('room0').value) || 'general';
+  $('login').style.display = 'none'; $('app').style.display = 'flex';
+  startLobby(); enter(r);
+}
+$('enter').onclick = login;
+['nick','room0'].forEach(id => $(id).addEventListener('keydown', e => { if(e.key==='Enter') login(); }));
+$('go').onclick = () => { const v = $('newroom').value; $('newroom').value=''; enter(v); };
+$('newroom').addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); $('go').click(); } });
+$('hidden').onchange = () => { hidden = $('hidden').checked; announce(); renderRooms(); };
+$('form').onsubmit = e => { e.preventDefault(); submit($('msg').value); $('msg').value=''; };
+$('menu').onclick = () => $('side').classList.toggle('open');
+window.addEventListener('hashchange', () => { const r = cleanRoom(location.hash.slice(1)); if(r && nick) enter(r); });
+window.addEventListener('pagehide', () => { try{ room && room.leave(); }catch{} });
+
+// Valores iniciales
+$('nick').value = store.get('nick') || '';
+const h0 = cleanRoom(location.hash.slice(1)); if(h0) $('room0').value = h0;
+</script>
+</body>
+</html>
